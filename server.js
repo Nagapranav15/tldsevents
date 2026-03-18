@@ -15,7 +15,7 @@ const ticketTemplate = require("./ticketTemplate");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({origin:"*"}));
 app.use(express.json());
 app.use(express.static("public"));
 app.use("/tickets", express.static("uploads"));
@@ -221,6 +221,7 @@ const html = ticketTemplate({
 });
 
 const browser = await puppeteer.launch({
+  args: ['--no-sandbox', '--disable-setuid-sandbox'],
   headless: "new"
 });
 
