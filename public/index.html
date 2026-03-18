@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Event Booking</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+  --bg:#131414;
+  --card:#1C1C1E;
+  --accent:#A280FF;
+  --text:#fff;
+  --muted:#aaa;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'League Spartan',sans-serif;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* SECTIONS */
+
+section{
+  padding:70px 20px;
+  max-width:1100px;
+  margin:auto;
+}
+
+/* HERO */
+
+.hero{
+  text-align:center;
+}
+
+.hero img{
+  width:100%;
+  border-radius:16px;
+  margin-bottom:20px;
+}
+
+.hero h1{
+  font-size:32px;
+  margin-bottom:10px;
+}
+
+.hero p{
+  color:var(--muted);
+}
+
+/* GRID */
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  align-items:center;
+}
+
+.grid img{
+  width:100%;
+  border-radius:12px;
+}
+
+@media(max-width:768px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* CARD */
+
+.card{
+  background:var(--card);
+  padding:20px;
+  border-radius:12px;
+}
+
+/* INPUTS */
+
+input, select{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:6px;
+  border:none;
+  background:#111;
+  color:white;
+}
+
+/* BUTTON */
+
+button{
+  width:100%;
+  padding:12px;
+  background:var(--accent);
+  border:none;
+  border-radius:8px;
+  color:white;
+  cursor:pointer;
+}
+
+button:disabled{
+  background:gray;
+}
+
+/* STATUS */
+
+#status{
+  margin-top:10px;
+  text-align:center;
+}
+
+/* NAVBAR */
+
+.navbar{
+  width:100%;
+  background:#111;
+  padding:15px 20px;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+
+.nav-container{
+  max-width:1100px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo img{
+  height:45px;
+}
+
+.nav-links a{
+  color:white;
+  text-decoration:none;
+  margin-left:20px;
+  font-size:14px;
+  opacity:0.8;
+}
+
+.nav-links a:hover{
+  opacity:1;
+}
+
+</style>
+
+</head>
+
+<body>
+  <nav class="navbar">
+
+  <div class="nav-container">
+
+    <div class="logo">
+      <img src="https://res.cloudinary.com/ddr8ylakx/image/upload/v1773825169/Untitled_design_27_m2fqif.png">
+    </div>
+
+    
+
+  </div>
+
+</nav>
+
+<!-- HERO -->
+
+<section class="hero">
+
+<img src="https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2">
+
+<h1>ThinkLab Live Concert 2026</h1>
+<p>Where Music Meets Innovation</p>
+
+</section>
+
+<!-- COMPANY -->
+
+<section>
+
+<div class="grid">
+
+<div>
+<h2>About ThinkLab</h2>
+<p>
+ThinkLab Digital Solutions is a growth-driven digital agency helping brands scale using performance marketing, automation, and high-converting websites.
+</p>
+</div>
+
+<img src="https://images.unsplash.com/photo-1556761175-4b46a572b786">
+
+</div>
+
+</section>
+
+<!-- EVENT -->
+
+<section>
+
+<div class="grid">
+
+<img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30">
+
+<div>
+<h2>About The Event</h2>
+<p>
+An immersive concert experience combining music, lights, and energy — built for unforgettable moments and vibrant audiences.
+</p>
+</div>
+
+</div>
+
+</section>
+
+<!-- BAND -->
+
+<section>
+
+<div class="grid">
+
+<div>
+<h2>About The Band</h2>
+<p>
+Experience electrifying performances across EDM, rock, and fusion — delivering an unforgettable live experience.
+</p>
+</div>
+
+<img src="https://images.unsplash.com/photo-1506157786151-b8491531f063">
+
+</div>
+
+</section>
+
+<!-- BOOKING -->
+
+<section>
+
+<h2>Book Your Ticket</h2>
+
+<div class="card">
+
+<input id="name" placeholder="Full Name">
+<input id="email" placeholder="Email Address">
+
+<select id="ticketType">
+  <option value="">Select Ticket Type</option>
+  <option value="single">Single Ticket - ₹499</option>
+  <option value="couple">Couple Ticket - ₹899</option>
+</select>
+
+
+<input id="quantity" type="number" min="1" placeholder="Quantity">
+
+<button onclick="pay()" id="payBtn">Proceed to Payment</button>
+
+<div id="status"></div>
+
+</div>
+
+</section>
+
+<script src="script.js"></script>
+
+<script>
+
+function getSelectedTicket(){
+return document.getElementById("ticketType").value;
+}
+
+</script>
+
+</body>
+</html>

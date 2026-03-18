@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Booking Confirmed</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#131414;
+  --card:#1C1C1E;
+  --accent:#A280FF;
+  --text:#fff;
+  --muted:#aaa;
+}
+
+body{
+  margin:0;
+  font-family:'League Spartan',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.container{
+  background:var(--card);
+  padding:25px;
+  border-radius:16px;
+  text-align:center;
+  width:340px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+}
+
+h1{
+  color:var(--accent);
+}
+
+.info{
+  margin-top:15px;
+  text-align:left;
+}
+
+.info p{
+  margin:6px 0;
+  color:var(--muted);
+}
+
+.info span{
+  color:white;
+  font-weight:600;
+}
+
+.qr{
+  margin:20px 0;
+}
+
+.qr img{
+  border-radius:10px;
+  background:white;
+  padding:10px;
+}
+
+button{
+  padding:10px 20px;
+  border:none;
+  background:var(--accent);
+  color:white;
+  border-radius:8px;
+  cursor:pointer;
+  margin-top:10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎉 Booking Confirmed</h1>
+<p>Your tickets are ready</p>
+
+<div class="info">
+  <p>Booking ID: <span id="bookingID"></span></p>
+  <p>Ticket Type: <span id="ticketType"></span></p>
+  <p>No. of Tickets: <span id="quantity"></span></p>
+</div>
+
+<div class="qr">
+  <img id="qrImage" width="180">
+</div>
+
+<p style="font-size:13px;color:var(--muted)">
+Show this QR at entry
+</p>
+
+<button id="downloadBtn">Download Ticket</button>
+<button onclick="goHome()">Back to Home</button>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+
+/* GET DATA */
+
+const params = new URLSearchParams(window.location.search);
+
+const bookingID = params.get("booking");
+const qrEncoded = params.get("qr");
+const file = params.get("file");
+const quantity = params.get("qty");
+const type = params.get("type");
+const name = params.get("name");
+
+/* DISPLAY */
+
+document.getElementById("bookingID").innerText = bookingID || "N/A";
+document.getElementById("ticketType").innerText = type || "N/A";
+document.getElementById("quantity").innerText = quantity || "N/A";
+
+/* NAME */
+
+const nameEl = document.createElement("p");
+nameEl.innerHTML = `<b>Name:</b> ${decodeURIComponent(name || "N/A")}`;
+document.querySelector(".info").appendChild(nameEl);
+
+/* QR */
+
+document.getElementById("qrImage").src =
+`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${decodeURIComponent(qrEncoded)}`;
+
+/* DOWNLOAD */
+
+document.getElementById("downloadBtn").onclick = function(){
+  if(file){
+    window.open(file, "_blank");
+  }else{
+    alert("Download not available");
+  }
+};
+
+/* CONFETTI */
+
+confetti({
+  particleCount: 120,
+  spread: 70,
+  origin: { y: 0.6 }
+});
+
+/* BACK */
+
+function goHome(){
+  window.location.replace("/index.html");
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Scanner</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+body{
+background:#131414;
+color:white;
+text-align:center;
+font-family:sans-serif;
+}
+
+#reader{
+width:300px;
+margin:auto;
+}
+
+.card{
+background:#1C1C1E;
+padding:15px;
+margin:20px;
+border-radius:10px;
+}
+
+button{
+padding:10px 15px;
+border:none;
+background:#A280FF;
+color:white;
+border-radius:8px;
+cursor:pointer;
+margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Scan Ticket</h2>
+
+<div id="reader"></div>
+
+<div id="result"></div>
+
+<script>
+
+console.log("Scanner script loaded");
+
+let scanning = true;
+const result = document.getElementById("result");
+
+/* INIT */
+
+const html5QrCode = new Html5Qrcode("reader");
+
+Html5Qrcode.getCameras()
+.then(devices => {
+
+  console.log("Cameras:", devices);
+
+  if(devices && devices.length){
+
+    html5QrCode.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+
+      (decodedText)=>{
+        console.log("QR SCANNED:", decodedText);
+        handleScan(decodedText);
+      },
+
+      (error)=>{
+        // silent scan errors (ignore)
+      }
+
+    );
+
+  } else {
+    alert("No camera found");
+  }
+
+})
+.catch(err=>{
+  console.error("Camera error:", err);
+  alert("Camera access failed");
+});
+
+/* SCAN HANDLER */
+
+function handleScan(decodedText){
+
+if(!scanning) return;
+scanning = false;
+
+let data;
+
+try{
+data = JSON.parse(decodedText);
+}catch{
+result.innerHTML = "❌ Invalid QR";
+scanning = true;
+return;
+}
+
+console.log("Parsed QR:", data);
+
+fetch("/check-booking",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body: JSON.stringify({bookingId:data.bookingId})
+})
+.then(res=>res.json())
+.then(res=>{
+
+console.log("Backend response:", res);
+
+if(res.status !== "ok"){
+result.innerHTML = "❌ Invalid Booking";
+scanning = true;
+return;
+}
+
+result.innerHTML = `
+<div class="card">
+<h3>Booking Details</h3>
+
+<p><b>Name:</b> ${res.name}</p>
+<p><b>Type:</b> ${res.type}</p>
+<p><b>Total Tickets:</b> ${res.quantity}</p>
+<p><b>Status:</b> ${res.used ? "❌ Already Used" : "✅ Valid"}</p>
+
+<button id="useBtn" ${res.used ? "disabled" : ""}>
+  ${res.used ? "Already Used" : "Allow Entry"}
+</button>
+</div>
+`;
+
+const btn = document.getElementById("useBtn");
+
+if(!res.used){
+btn.onclick = function(){
+
+fetch("/mark-booking-used",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body: JSON.stringify({bookingId:data.bookingId})
+})
+.then(res=>res.json())
+.then(r=>{
+
+if(r.status === "success"){
+alert("✅ Entry allowed");
+btn.innerText = "Already Used";
+btn.disabled = true;
+}else{
+alert("❌ Already used");
+}
+
+});
+
+};
+}
+
+setTimeout(()=>{ scanning = true; },2000);
+
+})
+.catch(err=>{
+console.error("Fetch error:", err);
+result.innerHTML = "Server error";
+scanning = true;
+});
+
+}
+
+</script>
+
+</body>
+</html>

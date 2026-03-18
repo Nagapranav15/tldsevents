@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Panel</title>
+
+<style>
+body{
+  font-family: Arial;
+  background:#131414;
+  color:white;
+  text-align:center;
+}
+
+input{
+  padding:10px;
+  margin:5px;
+}
+
+button{
+  padding:10px 15px;
+  cursor:pointer;
+}
+
+table{
+  margin:auto;
+  margin-top:20px;
+  border-collapse:collapse;
+  width:90%;
+}
+
+th,td{
+  padding:10px;
+  border:1px solid #444;
+}
+
+th{
+  background:#222;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Admin Login</h2>
+
+<input id="user" placeholder="Username"><br>
+<input id="pass" type="password" placeholder="Password"><br>
+
+<button onclick="login()">Login</button>
+
+<div id="panel" style="display:none"></div>
+
+<script>
+
+let token = "";
+
+/* LOGIN */
+
+function login(){
+
+fetch("/admin-login",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body: JSON.stringify({
+username: document.getElementById("user").value,
+password: document.getElementById("pass").value
+})
+})
+.then(res => res.json())
+.then(data => {
+
+if(data.success){
+token = data.token;
+loadDashboard();
+}else{
+alert("Wrong credentials");
+}
+
+});
+
+}
+
+/* DASHBOARD */
+
+function loadDashboard(){
+
+const panel = document.getElementById("panel");
+panel.style.display = "block";
+
+fetch("/admin-data",{
+headers:{ authorization: token }
+})
+.then(res => res.json())
+.then(data => {
+
+const stats = data.stats || {};
+const bookings = data.bookings || [];
+
+let html = `
+<h3>Stats</h3>
+Revenue: ₹${stats.totalRevenue || 0}<br>
+Single Tickets: ${stats.singleSold || 0}<br>
+Couple Tickets: ${stats.coupleSold || 0}<br><br>
+
+<b>Remaining Tickets:</b><br>
+Single Left: ${100 - (stats.singleSold || 0)}<br>
+Couple Left: ${25 - (stats.coupleSold || 0)}<br><br>
+`;
+
+html += `
+<table>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Total Tickets</th>
+<th>Booking ID</th>
+<th>Delete</th>
+</tr>
+`;
+
+/* ✅ FIXED ROW RENDERING */
+
+bookings.forEach(b=>{
+
+html += `
+<tr>
+<td>${b.name}</td>
+<td>${b.ticketType}</td>
+<td>${b.totalTickets}</td>
+<td>${b.bookingId}</td>
+<td><button onclick="del('${b.bookingId}')">Delete</button></td>
+</tr>
+`;
+
+});
+
+html += "</table>";
+
+if(panel.innerHTML !== html){
+  panel.innerHTML = html;
+}
+
+})
+.catch(err=>{
+console.error(err);
+panel.innerHTML = "Error loading data";
+});
+
+}
+
+/* DELETE */
+
+function del(id){
+
+if(!confirm("Delete this booking?")) return;
+
+fetch("/delete-booking",{
+method:"DELETE",
+headers:{
+"Content-Type":"application/json",
+authorization: token
+},
+body: JSON.stringify({bookingId:id})
+})
+.then(()=>loadDashboard());
+
+}
+setInterval(() => {
+  if(token){
+    loadDashboard();
+  }
+}, 5000); // refresh every 5 seconds
+
+</script>
+
+</body>
+</html>
