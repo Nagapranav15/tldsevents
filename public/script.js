@@ -1,3 +1,4 @@
+const BASE_URL = "https://tldsevents.onrender.com";
 window.pay = async function(){
 
   const name = document.getElementById("name").value.trim();
@@ -12,11 +13,16 @@ window.pay = async function(){
 
   /* BASIC VALIDATION */
 
-  if(!name || !email || !ticketType || !quantity){
+  if(!name || !email || !ticketType || isNaN(quantity)||quantity < 1){
     status.innerText = "Fill all fields";
     return;
   }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+if(!emailRegex.test(email)){
+  status.innerText = "Enter valid email";
+  return;
+}
   /* LIMIT CHECK (FRONTEND) */
 
   if(ticketType === "single" && quantity > 10){
@@ -39,9 +45,9 @@ window.pay = async function(){
 
   try{
 
-    const {key} = await (await fetch("/config")).json();
+    const {key} = await (await fetch(BASE_URL+"/config")).json();
 
-    const order = await (await fetch("/create-order",{
+    const order = await (await fetch(BASE_URL+"/create-order",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({amount})
@@ -57,7 +63,7 @@ window.pay = async function(){
 
         try{
 
-          const verifyRes = await fetch("/verify-payment",{
+          const verifyRes = await fetch(BASE_URL+"/verify-payment",{
             method:"POST",
             headers:{"Content-Type":"application/json"},
             body: JSON.stringify({
@@ -128,7 +134,7 @@ window.pay = async function(){
 async function loadAvailability(){
 
   try{
-    const res = await fetch("/availability");
+    const res = await fetch(BASE_URL+"/availability");
     const data = await res.json();
 
     document.getElementById("availability").innerText =
@@ -163,3 +169,11 @@ document.getElementById("ticketType").addEventListener("change", function(){
 /* ================= INIT ================= */
 
 window.onload = loadAvailability;
+
+document.getElementById("quantity").addEventListener("input", function(){
+  const max = this.max ? parseInt(this.max) : 1;
+
+  if(this.value > max){
+    this.value = max;
+  }
+});
