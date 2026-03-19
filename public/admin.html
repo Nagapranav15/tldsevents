@@ -36,7 +36,6 @@ th,td{
 th{
   background:#222;
 }
-
 </style>
 
 </head>
@@ -45,55 +44,86 @@ th{
 
 <h2>Admin Login</h2>
 
-<input id="user" placeholder="Username"><br>
-<input id="pass" type="password" placeholder="Password"><br>
-
-<button onclick="login()">Login</button>
+<div id="loginBox">
+  <input id="user" placeholder="Username"><br>
+  <input id="pass" type="password" placeholder="Password"><br>
+  <button onclick="login()">Login</button>
+</div>
 
 <div id="panel" style="display:none"></div>
 
 <script>
 
-let token = "";
+/* 🔥 CHANGE THIS AFTER DEPLOY */
+const BASE_URL = "https://tldsevents.onrender.com";
+// const BASE_URL = "https://your-backend.onrender.com";
 
-/* LOGIN */
+let isLoggedIn = false;
+
+/* ================= LOGIN ================= */
 
 function login(){
 
-fetch("/admin-login",{
+fetch(BASE_URL + "/admin-login",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body: JSON.stringify({
-username: document.getElementById("user").value,
-password: document.getElementById("pass").value
+  username: document.getElementById("user").value,
+  password: document.getElementById("pass").value
 })
 })
 .then(res => res.json())
 .then(data => {
 
 if(data.success){
-token = data.token;
-loadDashboard();
+  localStorage.setItem("adminToken", data.token);
+  isLoggedIn = true;
+
+  document.getElementById("loginBox").style.display = "none";
+
+  loadDashboard();
 }else{
-alert("Wrong credentials");
+  alert("Wrong credentials");
 }
 
 });
 
 }
 
-/* DASHBOARD */
+/* ================= DASHBOARD ================= */
 
 function loadDashboard(){
+
+if(!isLoggedIn){
+  return;
+}
 
 const panel = document.getElementById("panel");
 panel.style.display = "block";
 
-fetch("/admin-data",{
-headers:{ authorization: token }
+const token = localStorage.getItem("adminToken");
+
+fetch(BASE_URL + "/admin-data",{
+headers:{
+  "Authorization": "Bearer " + token
+}
 })
-.then(res => res.json())
+.then(res => {
+
+if(res.status === 403){
+  alert("Session expired. Login again.");
+  localStorage.removeItem("adminToken");
+  isLoggedIn = false;
+  location.reload();
+  return;
+}
+
+return res.json();
+
+})
 .then(data => {
+
+if(!data) return;
 
 const stats = data.stats || {};
 const bookings = data.bookings || [];
@@ -120,10 +150,7 @@ html += `
 </tr>
 `;
 
-/* ✅ FIXED ROW RENDERING */
-
 bookings.forEach(b=>{
-
 html += `
 <tr>
 <td>${b.name}</td>
@@ -133,14 +160,11 @@ html += `
 <td><button onclick="del('${b.bookingId}')">Delete</button></td>
 </tr>
 `;
-
 });
 
 html += "</table>";
 
-if(panel.innerHTML !== html){
-  panel.innerHTML = html;
-}
+panel.innerHTML = html;
 
 })
 .catch(err=>{
@@ -150,28 +174,39 @@ panel.innerHTML = "Error loading data";
 
 }
 
-/* DELETE */
+/* ================= DELETE ================= */
 
 function del(id){
 
 if(!confirm("Delete this booking?")) return;
 
-fetch("/delete-booking",{
+const token = localStorage.getItem("adminToken");
+
+fetch(BASE_URL + "/delete-booking",{
 method:"DELETE",
 headers:{
-"Content-Type":"application/json",
-authorization: token
+  "Content-Type":"application/json",
+  "Authorization":"Bearer " + token
 },
 body: JSON.stringify({bookingId:id})
 })
-.then(()=>loadDashboard());
+.then(res => {
+  if(res.status === 403){
+    alert("Unauthorized");
+    return;
+  }
+  loadDashboard();
+});
 
 }
+
+/* ================= AUTO REFRESH ================= */
+
 setInterval(() => {
-  if(token){
+  if(isLoggedIn){
     loadDashboard();
   }
-}, 5000); // refresh every 5 seconds
+}, 5000);
 
 </script>
 

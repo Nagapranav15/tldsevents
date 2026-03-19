@@ -1,4 +1,5 @@
-const BASE_URL = "https://tldsevents.onrender.com";
+const BASE_URL = "https://tldsevents.onrender.com"; // CHANGE TO RENDER URL AFTER DEPLOY
+
 window.pay = async function(){
 
   const name = document.getElementById("name").value.trim();
@@ -11,19 +12,19 @@ window.pay = async function(){
 
   status.innerText = "";
 
-  /* BASIC VALIDATION */
+  /* ================= VALIDATION ================= */
 
-  if(!name || !email || !ticketType || isNaN(quantity)||quantity < 1){
+  if(!name || !email || !ticketType || isNaN(quantity) || quantity < 1){
     status.innerText = "Fill all fields";
     return;
   }
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-if(!emailRegex.test(email)){
-  status.innerText = "Enter valid email";
-  return;
-}
-  /* LIMIT CHECK (FRONTEND) */
+  if(!emailRegex.test(email)){
+    status.innerText = "Enter valid email";
+    return;
+  }
 
   if(ticketType === "single" && quantity > 10){
     status.innerText = "Max 10 single tickets allowed";
@@ -35,23 +36,41 @@ if(!emailRegex.test(email)){
     return;
   }
 
-  /* PRICE */
+  /* ================= PRICE ================= */
 
-  let price = ticketType === "single" ? 499 : 899;
-  let amount = price * quantity;
+  const price = ticketType === "single" ? 499 : 899;
+  const amount = price * quantity;
 
   payBtn.disabled = true;
   payBtn.innerText = "Processing...";
 
   try{
 
-    const {key} = await (await fetch(BASE_URL+"/config")).json();
+    /* GET KEY */
 
-    const order = await (await fetch(BASE_URL+"/create-order",{
+    const configRes = await fetch(BASE_URL + "/config");
+
+    if(!configRes.ok){
+      throw new Error("Server not responding");
+    }
+
+    const {key} = await configRes.json();
+
+    /* CREATE ORDER */
+
+    const orderRes = await fetch(BASE_URL + "/create-order",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({amount})
-    })).json();
+    });
+
+    if(!orderRes.ok){
+      throw new Error("Order creation failed");
+    }
+
+    const order = await orderRes.json();
+
+    /* RAZORPAY */
 
     const rzp = new Razorpay({
       key,
@@ -63,7 +82,7 @@ if(!emailRegex.test(email)){
 
         try{
 
-          const verifyRes = await fetch(BASE_URL+"/verify-payment",{
+          const verifyRes = await fetch(BASE_URL + "/verify-payment",{
             method:"POST",
             headers:{"Content-Type":"application/json"},
             body: JSON.stringify({
@@ -75,14 +94,23 @@ if(!emailRegex.test(email)){
             })
           });
 
+          if(!verifyRes.ok){
+            throw new Error("Verification failed");
+          }
+
           const result = await verifyRes.json();
 
           console.log("BACKEND RESPONSE:", result);
 
           if(result.status === "success"){
 
+            // prevent double booking
+            payBtn.disabled = true;
+            payBtn.innerText = "Booked";
+
+            // redirect (no downloadUrl now)
             const url =
-`/success.html?booking=${result.bookingId}&qr=${encodeURIComponent(result.qrData)}&file=${result.downloadUrl}&qty=${result.quantity}&type=${result.ticketType}&name=${encodeURIComponent(result.name)}`;
+`/success.html?booking=${result.bookingId}&qr=${encodeURIComponent(result.qrData)}&qty=${result.quantity}&type=${result.ticketType}&name=${encodeURIComponent(result.name)}`;
 
             window.location.href = url;
 
@@ -128,13 +156,12 @@ if(!emailRegex.test(email)){
 
 };
 
-
 /* ================= AVAILABILITY ================= */
 
 async function loadAvailability(){
 
   try{
-    const res = await fetch(BASE_URL+"/availability");
+    const res = await fetch(BASE_URL + "/availability");
     const data = await res.json();
 
     document.getElementById("availability").innerText =
@@ -145,7 +172,6 @@ async function loadAvailability(){
   }
 
 }
-
 
 /* ================= LIMIT CONTROL ================= */
 
@@ -164,7 +190,6 @@ document.getElementById("ticketType").addEventListener("change", function(){
 
   quantityInput.value = 1;
 });
-
 
 /* ================= INIT ================= */
 

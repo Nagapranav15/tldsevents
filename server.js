@@ -5,18 +5,28 @@ const Razorpay = require("razorpay");
 const cors = require("cors");
 const crypto = require("crypto");
 const QRCode = require("qrcode");
-const PDFDocument = require("pdfkit");
 const nodemailer = require("nodemailer");
 const fs = require("fs");
 const path = require("path");
 const mongoose = require("mongoose");
 const puppeteer = require("puppeteer");
+
 const ticketTemplate = require("./ticketTemplate");
+const Booking = require("./models/Booking");
 
 const app = express();
 
-app.use(cors({origin:"*"}));
+/* ================= CONFIG ================= */
+
 app.use(express.json());
+
+app.use(cors({
+  origin: [
+    "http://localhost:5500",
+    "https://tldsevents.vercel.app"
+  ]
+}));
+
 app.use(express.static("public"));
 app.use("/tickets", express.static("uploads"));
 
@@ -25,40 +35,6 @@ app.use("/tickets", express.static("uploads"));
 mongoose.connect(process.env.MONGO_URI)
 .then(()=>console.log("MongoDB Connected"))
 .catch(err=>console.log(err));
-
-const Booking = require("./models/Booking");
-
-/* ================= EMAIL ================= */
-
-async function sendMail(email, filePath){
-
-  try{
-
-    console.log("📧 Attempting to send mail to:", email);
-
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
-
-    const info = await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Your Event Ticket 🎟",
-      text: "Your booking is confirmed. Ticket attached.",
-      attachments: [{ path: filePath }]
-    });
-
-    console.log("✅ MAIL SENT:", info.response);
-
-  }catch(err){
-    console.error("❌ MAIL ERROR:", err.message);
-  }
-
-}
 
 /* ================= LIMIT ================= */
 
@@ -74,6 +50,37 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_SECRET
 });
 
+/* ================= PDF CONTROL ================= */
+
+let activePDFs = 0;
+const MAX_PDFS = 3;
+
+/* ================= EMAIL ================= */
+
+async function sendMail(email, filePath){
+  try{
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Your Event Ticket 🎟",
+      text: "Your booking is confirmed. Ticket attached.",
+      attachments: [{ path: filePath }]
+    });
+
+    console.log("MAIL SENT:", email);
+  }catch(err){
+    console.error("MAIL ERROR:", err.message);
+  }
+}
+
 /* ================= CONFIG ================= */
 
 app.get("/config",(req,res)=>{
@@ -84,22 +91,19 @@ app.get("/config",(req,res)=>{
 
 app.get("/availability", async (req,res)=>{
 
-  const singleSold = await Booking.aggregate([
-    { $match: { ticketType: "single" } },
-    { $group: { _id: null, total: { $sum: "$totalTickets" } } }
+  const single = await Booking.aggregate([
+    {$match:{ticketType:"single"}},
+    {$group:{_id:null,total:{$sum:"$totalTickets"}}}
   ]);
 
-  const coupleSold = await Booking.aggregate([
-    { $match: { ticketType: "couple" } },
-    { $group: { _id: null, total: { $sum: "$totalTickets" } } }
+  const couple = await Booking.aggregate([
+    {$match:{ticketType:"couple"}},
+    {$group:{_id:null,total:{$sum:"$totalTickets"}}}
   ]);
-
-  const singleCount = singleSold[0]?.total || 0;
-  const coupleCount = coupleSold[0]?.total || 0;
 
   res.json({
-    singleAvailable: TOTAL_LIMIT.single - singleCount,
-    coupleAvailable: TOTAL_LIMIT.couple - coupleCount
+    singleAvailable: TOTAL_LIMIT.single - (single[0]?.total || 0),
+    coupleAvailable: TOTAL_LIMIT.couple - (couple[0]?.total || 0)
   });
 
 });
@@ -107,15 +111,18 @@ app.get("/availability", async (req,res)=>{
 /* ================= CREATE ORDER ================= */
 
 app.post("/create-order", async (req,res)=>{
-  const { amount } = req.body;
+  try{
+    const order = await razorpay.orders.create({
+      amount: req.body.amount * 100,
+      currency:"INR",
+      receipt:"receipt_"+Date.now()
+    });
 
-  const order = await razorpay.orders.create({
-    amount: amount * 100,
-    currency:"INR",
-    receipt:"receipt_"+Date.now()
-  });
-
-  res.json(order);
+    res.json(order);
+  }catch(err){
+    console.error("RAZORPAY ERROR:", err);
+    res.status(500).json({error:"Order failed"});
+  }
 });
 
 /* ================= VERIFY PAYMENT ================= */
@@ -132,54 +139,30 @@ app.post("/verify-payment", async (req,res)=>{
     quantity
   } = req.body;
 
-  /* VERIFY SIGNATURE */
-
   const body = razorpay_order_id + "|" + razorpay_payment_id;
 
   const expected = crypto
-  .createHmac("sha256", process.env.RAZORPAY_SECRET)
-  .update(body)
-  .digest("hex");
+    .createHmac("sha256", process.env.RAZORPAY_SECRET)
+    .update(body)
+    .digest("hex");
 
   if(expected !== razorpay_signature){
     return res.json({status:"failure"});
   }
 
-  /* LIMIT */
+  if(ticketType === "single" && quantity > 10) return res.json({status:"max_limit"});
+  if(ticketType === "couple" && quantity > 5) return res.json({status:"max_limit"});
 
-  if(ticketType === "single" && quantity > 10){
-    return res.json({status:"max_limit"});
-  }
-
-  if(ticketType === "couple" && quantity > 5){
-    return res.json({status:"max_limit"});
-  }
-
-  /* AVAILABILITY CHECK */
-
-  const singleSold = await Booking.aggregate([
-    { $match: { ticketType: "single" } },
-    { $group: { _id: null, total: { $sum: "$totalTickets" } } }
+  const sold = await Booking.aggregate([
+    {$match:{ticketType}},
+    {$group:{_id:null,total:{$sum:"$totalTickets"}}}
   ]);
 
-  const coupleSold = await Booking.aggregate([
-    { $match: { ticketType: "couple" } },
-    { $group: { _id: null, total: { $sum: "$totalTickets" } } }
-  ]);
+  const available = TOTAL_LIMIT[ticketType] - (sold[0]?.total || 0);
 
-  const singleCount = singleSold[0]?.total || 0;
-  const coupleCount = coupleSold[0]?.total || 0;
-
-  const available = {
-    single: TOTAL_LIMIT.single - singleCount,
-    couple: TOTAL_LIMIT.couple - coupleCount
-  };
-
-  if(quantity > available[ticketType]){
+  if(quantity > available){
     return res.json({status:"sold_out"});
   }
-
-  /* CREATE BOOKING */
 
   const bookingId = "TLDS_" + Date.now();
 
@@ -191,66 +174,10 @@ app.post("/verify-payment", async (req,res)=>{
     totalTickets: quantity
   });
 
-  /* QR */
-
-  const qrData = JSON.stringify({
-    bookingId,
-    name,
-    ticketType,
-    quantity
-  });
-
+  const qrData = JSON.stringify({bookingId,name,ticketType,quantity});
   const qrImage = await QRCode.toDataURL(qrData);
 
-  /* PDF */
-
-  const uploadDir = path.join(__dirname,"uploads");
-  if(!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
-
-  const fileName = "booking_" + Date.now()+".pdf";
-  const filePath = path.join(uploadDir,fileName);
-
-  /* ================= PDF (DESIGNED) ================= */
-
-const html = ticketTemplate({
-  name,
-  ticketType,
-  quantity,
-  bookingId,
-  qrImage
-});
-
-const browser = await puppeteer.launch({
-  args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  headless: "new"
-});
-
-const page = await browser.newPage();
-
-await page.setContent(html, {
-  waitUntil: "networkidle0"
-});
-
-await page.pdf({
-  path: filePath,
-  format: "A4",
-  printBackground: true
-});
-
-await browser.close();
-
-/* SEND MAIL */
-
-try{
-  await sendMail(email, filePath);
-  console.log("MAIL SENT ✅");
-}catch(err){
-  console.error("MAIL ERROR ❌", err);
-}
-
-  
-
-  /* RESPONSE */
+  /* FAST RESPONSE */
 
   res.json({
     status:"success",
@@ -258,134 +185,137 @@ try{
     quantity,
     ticketType,
     name,
-    qrData,
-    downloadUrl:`/tickets/${fileName}`
+    qrData
+  });
+
+  /* BACKGROUND WORK */
+
+  setImmediate(async () => {
+
+    if(activePDFs >= MAX_PDFS){
+      console.log("Skipping PDF:", bookingId);
+      return;
+    }
+
+    activePDFs++;
+
+    try{
+
+      const uploadDir = path.join(__dirname,"uploads");
+      if(!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+
+      const filePath = path.join(uploadDir, "ticket_"+Date.now()+".pdf");
+
+      const html = ticketTemplate({
+        name,
+        ticketType,
+        quantity,
+        bookingId,
+        qrImage
+      });
+
+      const browser = await puppeteer.launch({
+        headless:true,
+        args:["--no-sandbox","--disable-setuid-sandbox"]
+      });
+
+      const page = await browser.newPage();
+      await page.setContent(html,{waitUntil:"networkidle0"});
+
+      await page.pdf({
+        path:filePath,
+        format:"A4",
+        printBackground:true
+      });
+
+      await browser.close();
+
+      await sendMail(email,filePath);
+
+      console.log("DONE:", bookingId);
+
+    }catch(err){
+      console.error("BACKGROUND ERROR:", err);
+    }finally{
+      activePDFs--;
+    }
+
   });
 
 });
 
 /* ================= ADMIN ================= */
 
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const ADMIN_TOKEN = "secure_admin_token_123";
 
-/* LOGIN */
+function verifyAdmin(req,res,next){
+  const token = req.headers.authorization?.split(" ")[1];
+  if(token !== ADMIN_TOKEN) return res.status(403).json({error:"Unauthorized"});
+  next();
+}
 
 app.post("/admin-login",(req,res)=>{
   const {username,password} = req.body;
 
-  if(username === process.env.ADMIN_USERNAME && password === process.env.ADMIN_PASSWORD){
+  if(username === ADMIN_USERNAME && password === ADMIN_PASSWORD){
     return res.json({success:true, token: ADMIN_TOKEN});
   }
 
   res.json({success:false});
 });
 
-/* ADMIN DATA */
-
-app.get("/admin-data", async (req,res)=>{
-
-  const token = req.headers.authorization;
-
-  if(token !== ADMIN_TOKEN){
-    return res.status(403).json({error:"Unauthorized"});
-  }
-
-  const bookings = await Booking.find().sort({ _id: -1 });
-
-  let single = 0, couple = 0;
-
-  bookings.forEach(b=>{
-    if(b.ticketType==="single") single += b.totalTickets;
-    if(b.ticketType==="couple") couple += b.totalTickets;
-  });
-
-  res.json({
-    bookings,
-    stats:{
-      totalRevenue:(single*499)+(couple*899),
-      singleSold:single,
-      coupleSold:couple
-    }
-  });
-
-});
-
-/* DELETE */
-
-app.delete("/delete-booking", async (req,res)=>{
-
-  const token = req.headers.authorization;
-
-  if(token !== ADMIN_TOKEN){
-    return res.status(403).json({error:"Unauthorized"});
-  }
-
-  const { bookingId } = req.body;
-
-  await Booking.deleteOne({bookingId});
-
-  res.json({status:"deleted"});
-});
-
-app.post("/check-booking", async (req,res)=>{
+app.get("/admin-data", verifyAdmin, async (req,res)=>{
 
   try{
 
-    const { bookingId } = req.body;
+    const bookings = await Booking.find().sort({ _id: -1 });
 
-    if(!bookingId){
-      return res.json({status:"invalid"});
-    }
+    let single = 0;
+    let couple = 0;
 
-    const booking = await Booking.findOne({ bookingId });
+    bookings.forEach(b => {
 
-    if(!booking){
-      return res.json({ status:"invalid" });
-    }
+      const type = (b.ticketType || "").toLowerCase().trim();
+      const qty = Number(b.totalTickets) || 0;
+
+      if(type === "single"){
+        single += qty;
+      } 
+      else if(type === "couple"){
+        couple += qty;
+      }
+
+    });
+
+    const stats = {
+      totalRevenue: (single * 499) + (couple * 899),
+      singleSold: single,
+      coupleSold: couple
+    };
+
+    console.log("STATS:", stats);
 
     res.json({
-      status:"ok",
-      name: booking.name,
-      type: booking.ticketType,
-      quantity: booking.totalTickets,
-      used: booking.used || false   // 🔥 FIX
+      bookings,
+      stats
     });
 
   }catch(err){
-    console.error("CHECK ERROR:", err);
-    res.status(500).json({status:"error"});
+    console.error("ADMIN DATA ERROR:", err);
+    res.status(500).json({ error: "Server error" });
   }
 
 });
-app.post("/mark-booking-used", async (req,res)=>{
 
-  try{
-
-    const { bookingId } = req.body;
-
-    const booking = await Booking.findOne({ bookingId });
-
-    if(!booking){
-      return res.json({ status:"invalid" });
-    }
-
-    if(booking.used){
-      return res.json({ status:"already_used" });
-    }
-
-    booking.used = true;
-    await booking.save();
-
-    res.json({ status:"success" });
-
-  }catch(err){
-    console.error("MARK ERROR:", err);
-    res.status(500).json({status:"error"});
-  }
-
+app.delete("/delete-booking", verifyAdmin, async (req,res)=>{
+  await Booking.deleteOne({bookingId:req.body.bookingId});
+  res.json({status:"deleted"});
 });
 
 /* ================= START ================= */
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log("Server running"));
+app.listen(process.env.PORT || 5000, ()=>{
+  console.log("Server running");
+});

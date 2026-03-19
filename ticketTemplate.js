@@ -183,7 +183,27 @@ body {
   </div>
 
 </div>
+<div style="margin-top:20px; padding:15px; border-top:1px solid #ccc; font-size:12px; color:#555;">
 
+  <b>Terms & Conditions:</b><br><br>
+
+  • Seating will be based on First Come First Served basis.<br>
+  • The Event Has been listed by Thinklab Digital Solutions, any issues please contact them.<br>
+  • Entry allowed only with valid QR code.<br>
+  • If you were denied entry, please email at info@thinklabdigitalsolutions.com<br>
+  • All refund requests must be submitted to @info@thinklabdigitalsolutions.com within 2 days of the event's completion. Any requests received after this period — whether for denied entry or other reasons — will not be processed unless the event was ocially cancelled. In such cases, customers will need to directly contact the venue or event organiser for any further assistance regarding refunds.<br>
+  • Additionally, SortMyScene shall not be held liable or responsible for any violation of intellectual property rights that may arise out of any Artist performance at the event.<br>
+  • Tickets are non-cancelable, non-refundable and non-transferable.<br>
+  • Guestlist may shut earlier than the mentioned time once it is full.<br>
+  • Entry must be no later than the time on your ticket.<br>
+  • Consumption of alcohol and illegal substances is strictly prohibited.<br>
+  • The venue and schedule maybe subject to change.<br>
+  • No refund/replacement on a purchased ticket. Tickets you purchase are for personal use. You must not transfer (or seek to transfer) the tickets in breach of the applicable terms. A breach of this condition will entitle us to cancel the tickets without prior notication, refund, compensation or liability.<br>
+  • The management reserves the exclusive right without refund or other recourse, to refuse admission to anyone who is found to be in breach of these terms and conditions including, if necessary, ejecting the holder/s of the ticket from the venue after they have entered the premises. <br>
+  • These terms and conditions are subject to change from time to time at the discretion of the organizer.<br>
+
+
+</div>
 </body>
 </html>
 `;
