@@ -10,6 +10,10 @@
 
 <style>
 
+html{
+  scroll-behavior:smooth;
+}
+
 :root{
   --bg:#131414;
   --card:#1C1C1E;
@@ -57,6 +61,24 @@ section{
 
 .hero p{
   color:var(--muted);
+}
+
+/* HERO BUTTON */
+
+.hero a{
+  display:inline-block;
+  margin-top:20px;
+  padding:12px 25px;
+  background:var(--accent);
+  color:white;
+  text-decoration:none;
+  border-radius:8px;
+  font-weight:600;
+  transition:0.3s;
+}
+
+.hero a:hover{
+  opacity:0.9;
 }
 
 /* GRID */
@@ -145,37 +167,20 @@ button:disabled{
   height:75px;
 }
 
-.nav-links a{
-  color:white;
-  text-decoration:none;
-  margin-left:20px;
-  font-size:14px;
-  opacity:0.8;
-}
-
-.nav-links a:hover{
-  opacity:1;
-}
-
 </style>
 
 </head>
 
 <body>
-  <nav class="navbar">
 
+<nav class="navbar">
   <div class="nav-container">
-
     <div class="logo">
       <a href="https://www.thinklabdigitalsolutions.com" target="_blank" rel="noopener noreferrer">
-      <img src="https://res.cloudinary.com/ddr8ylakx/image/upload/v1773825169/Untitled_design_27_m2fqif.png">
+        <img src="https://res.cloudinary.com/ddr8ylakx/image/upload/v1773825169/Untitled_design_27_m2fqif.png">
       </a>
     </div>
-
-    
-
   </div>
-
 </nav>
 
 <!-- HERO -->
@@ -187,9 +192,9 @@ button:disabled{
 <h1>TollyWood Mehfil</h1>
 <p>Tollywood Beats come alive</p>
 
+<a href="#booking">🎟 Book Tickets</a>
+
 </section>
-
-
 
 <!-- EVENT -->
 
@@ -200,10 +205,9 @@ button:disabled{
 <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30">
 
 <div>
-<h2>About The Event</h2><Br>
+<h2>About The Event</h2><br>
 <p>
-
-Tollywood Mehfil is an electrifying jamming session that brings together music lovers, performers, and enthusiasts to celebrate the vibrant spirit of Telugu cinema. This event is all about raw talent, live energy, and unforgettable vibes, where participants can sing, play instruments, and relive iconic Tollywood melodies in a lively, interactive setting. From classic hits to trending chartbusters, the mehfil creates a space for creativity, collaboration, and pure musical passion, making it a must-attend experience for anyone who lives and breathes Tollywood music.
+Tollywood Mehfil is an electrifying jamming session that brings together music lovers, performers, and enthusiasts to celebrate the vibrant spirit of Telugu cinema...
 </p>
 </div>
 
@@ -220,8 +224,7 @@ Tollywood Mehfil is an electrifying jamming session that brings together music l
 <div>
 <h2>About The Band</h2><br>
 <p>
-Eira The Band is a dynamic multi-city music collective known for delivering high-energy live performances and soulful musical experiences. With a unique concept of “one name, multiple bands” performing across cities like Bengaluru and Hyderabad, they bring together diverse artists under a single identity. Their style blends live jamming, Sufi vibes, and contemporary music, creating an immersive atmosphere that connects deeply with audiences. From hosting open jam sessions to performing at events and cultural nights, Eira focuses on spreading emotion and energy through music, making every performance feel interactive, raw, and memorable. 
-"Eira The Band (@eira.theband) - Instagram"
+Eira The Band is a dynamic multi-city music collective known for delivering high-energy live performances...
 </p>
 </div>
 
@@ -233,7 +236,7 @@ Eira The Band is a dynamic multi-city music collective known for delivering high
 
 <!-- BOOKING -->
 
-<section>
+<section id="booking">
 
 <h2>Book Your Ticket</h2>
 
@@ -248,7 +251,6 @@ Eira The Band is a dynamic multi-city music collective known for delivering high
   <option value="couple">Couple Ticket - ₹899</option>
 </select>
 
-
 <input id="quantity" type="number" min="1" placeholder="Quantity">
 
 <button onclick="pay()" id="payBtn">Proceed to Payment</button>
@@ -262,11 +264,9 @@ Eira The Band is a dynamic multi-city music collective known for delivering high
 <script src="script.js"></script>
 
 <script>
-
 function getSelectedTicket(){
-return document.getElementById("ticketType").value;
+  return document.getElementById("ticketType").value;
 }
-
 </script>
 
 </body>
