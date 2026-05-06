@@ -6,6 +6,8 @@ const bookingSchema = new mongoose.Schema({
   email: String,
   ticketType: String,
   totalTickets: Number,
+  eventId: String,
+  eventTitle: String,
   used: { type: Boolean, default: false }
 });
 

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Terms of Service - TLDS Events | Thinklab Digital Solutions LLP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="animations.css">
+
+<style>
+html{
+  scroll-behavior:smooth;
+}
+
+:root{
+  --bg:#131414;
+  --card:#1C1C1E;
+  --accent:#A280FF;
+  --text:#fff;
+  --muted:#aaa;
+  --gradient:linear-gradient(135deg, #A280FF 0%, #7B68EE 100%);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* NAVBAR */
+
+.navbar{
+  width:100%;
+  background:rgba(19,20,20,0.95);
+  backdrop-filter:blur(10px);
+  padding:15px 30px;
+  position:sticky;
+  top:0;
+  z-index:1000;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+.nav-container{
+  max-width:1400px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo img{
+  height:50px;
+}
+
+.nav-links{
+  display:flex;
+  gap:30px;
+}
+
+.nav-links a{
+  color:var(--text);
+  text-decoration:none;
+  font-size:14px;
+  font-weight:500;
+  transition:0.3s;
+  position:relative;
+}
+
+.nav-links a:hover{
+  color:var(--accent);
+}
+
+.nav-links a::after{
+  content:'';
+  position:absolute;
+  bottom:-5px;
+  left:0;
+  width:0;
+  height:2px;
+  background:var(--accent);
+  transition:0.3s;
+}
+
+.nav-links a:hover::after{
+  width:100%;
+}
+
+/* SECTIONS */
+
+section{
+  padding:70px 20px;
+  max-width:1100px;
+  margin:auto;
+}
+
+h1{
+  font-size:36px;
+  margin-bottom:10px;
+  color:var(--accent);
+}
+
+.subtitle{
+  color:var(--muted);
+  margin-bottom:40px;
+}
+
+h2{
+  font-size:24px;
+  margin:30px 0 15px 0;
+  color:var(--accent);
+}
+
+p{
+  line-height:1.8;
+  color:#ddd;
+  margin-bottom:15px;
+}
+
+ul{
+  margin-left:20px;
+  margin-bottom:15px;
+}
+
+li{
+  line-height:1.8;
+  color:#ddd;
+  margin-bottom:8px;
+}
+
+/* MOBILE RESPONSIVE STYLES */
+
+@media (max-width: 768px) {
+  body {
+    padding: 20px 15px;
+    line-height: 1.6;
+  }
+  
+  h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+  
+  .subtitle {
+    font-size: 14px;
+    margin-bottom: 30px;
+  }
+  
+  h2 {
+    font-size: 22px;
+    margin: 25px 0 15px 0;
+  }
+  
+  p {
+    margin-bottom: 15px;
+    font-size: 14px;
+  }
+  
+  ul, ol {
+    margin-bottom: 15px;
+    padding-left: 25px;
+  }
+  
+  li {
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 15px 12px;
+  }
+  
+  h1 {
+    font-size: 24px;
+  }
+  
+  .subtitle {
+    font-size: 13px;
+  }
+  
+  h2 {
+    font-size: 20px;
+  }
+  
+  p {
+    font-size: 13px;
+  }
+  
+  li {
+    font-size: 13px;
+  }
+  
+  ul, ol {
+    padding-left: 20px;
+  }
+}
+
+/* MOBILE ANIMATIONS */
+
+@media (max-width: 768px) {
+  body {
+    animation: mobileFadeInUp 0.8s ease-out;
+  }
+  
+  h1 {
+    animation: mobileFadeInUp 0.8s ease-out 0.2s both;
+  }
+  
+  .subtitle {
+    animation: mobileFadeInUp 0.8s ease-out 0.3s both;
+  }
+  
+  h2 {
+    animation: mobileFadeInUp 0.8s ease-out 0.4s both;
+  }
+  
+  p, ul, ol {
+    animation: mobileFadeInUp 0.8s ease-out 0.5s both;
+  }
+}
+
+/* TOUCH INTERACTIONS */
+
+@media (hover: none) and (pointer: coarse) {
+  a:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* FOOTER */
+
+footer{
+  background:#0d0d0d;
+  padding:50px 30px 30px;
+  margin-top:100px;
+  border-top:1px solid rgba(255,255,255,0.1);
+}
+
+.footer-content{
+  max-width:1400px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:40px;
+}
+
+.footer-section h4{
+  color:var(--accent);
+  margin-bottom:20px;
+  font-size:18px;
+}
+
+.footer-section p{
+  color:var(--muted);
+  line-height:1.6;
+  font-size:14px;
+}
+
+.footer-section a{
+  display:block;
+  color:var(--muted);
+  text-decoration:none;
+  margin-bottom:10px;
+  font-size:14px;
+  transition:0.3s;
+}
+
+.footer-section a:hover{
+  color:var(--accent);
+}
+
+.footer-bottom{
+  max-width:1400px;
+  margin:auto;
+  margin-top:50px;
+  padding-top:30px;
+  border-top:1px solid rgba(255,255,255,0.1);
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+}
+
+@media(max-width:768px){
+  .nav-links{
+    display:none;
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- SCROLL PROGRESS BAR -->
+<div class="scroll-progress"></div>
+
+<section class="reveal animate-fadeInUp">
+  <h1>Terms of Service</h1>
+  <p class="subtitle">Last Updated: May 2026</p>
+  <p class="subtitle">Thinklab Digital Solutions LLP</p>
+
+  <h2>1. Acceptance of Terms</h2>
+  <p>By accessing or using the TLDS Events website and booking services, you agree to be bound by these Terms of Service. TLDS Events is a service provided by Thinklab Digital Solutions LLP. If you do not agree to these terms, please do not use our services.</p>
+
+  <h2>2. Services</h2>
+  <p>TLDS Events provides an online platform for booking event tickets. Our services include:</p>
+  <ul>
+    <li>Event ticket sales and reservations</li>
+    <li>Online payment processing through Razorpay</li>
+    <li>Digital ticket delivery via email</li>
+    <li>Event information and updates</li>
+    <li>Customer support services</li>
+  </ul>
+
+  <h2>3. User Responsibilities</h2>
+  <p>As a user of our platform, you agree to:</p>
+  <ul>
+    <li>Provide accurate and complete information during registration and booking</li>
+    <li>Maintain the confidentiality of your account credentials</li>
+    <li>Not share your ticket or booking details with unauthorized persons</li>
+    <li>Comply with all applicable laws and regulations</li>
+    <li>Not use our platform for fraudulent or illegal activities</li>
+    <li>Respect the rights of other users and event attendees</li>
+  </ul>
+
+  <h2>4. Booking and Payment</h2>
+  <p>By booking a ticket through our platform, you agree that:</p>
+  <ul>
+    <li>All bookings are subject to availability</li>
+    <li>Payments are processed securely through Razorpay</li>
+    <li>You are authorized to use the payment method provided</li>
+    <li>Prices are listed in Indian Rupees (INR) and include applicable taxes</li>
+    <li>Booking confirmation is subject to successful payment verification</li>
+  </ul>
+
+  <h2>5. Ticket Usage</h2>
+  <p>Tickets purchased through TLDS Events are subject to the following conditions:</p>
+  <ul>
+    <li>Tickets are non-transferable unless explicitly authorized</li>
+    <li>Each ticket is valid for one person only (unless specified as couple ticket)</li>
+    <li>You must present valid ID at the event venue</li>
+    <li>Duplicate or fake tickets will not be accepted</li>
+    <li>Tickets cannot be exchanged for cash</li>
+  </ul>
+
+  <h2>6. Event Conduct</h2>
+  <p>All attendees must adhere to the following conduct guidelines:</p>
+  <ul>
+    <li>Follow all venue rules and regulations</li>
+    <li>Respect other attendees, performers, and staff</li>
+    <li>Do not engage in disruptive or abusive behavior</li>
+    <li>Comply with security checks and procedures</li>
+    <li>Alcohol and substance abuse policies must be followed</li>
+  </ul>
+  <p>We reserve the right to remove any attendee who violates these guidelines without refund.</p>
+
+  <h2>7. Intellectual Property</h2>
+  <p>All content on this website, including text, images, logos, and design, is owned by TLDS Events or its licensors and is protected by copyright laws. You may not:</p>
+  <ul>
+    <li>Copy, reproduce, or distribute our content without permission</li>
+    <li>Use our trademarks without authorization</li>
+    <li>Modify or create derivative works from our content</li>
+  </ul>
+
+  <h2>8. Limitation of Liability</h2>
+  <p>TLDS Events shall not be liable for:</p>
+  <ul>
+    <li>Any indirect, incidental, or consequential damages</li>
+    <li>Loss of data, revenue, or profits arising from use of our services</li>
+    <li>Events cancelled due to force majeure circumstances</li>
+    <li>Technical issues or internet connectivity problems</li>
+    <li>Actions of third-party service providers</li>
+  </ul>
+
+  <h2>9. Indemnification</h2>
+  <p>You agree to indemnify and hold TLDS Events harmless from any claims, damages, or expenses arising from:</p>
+  <ul>
+    <li>Your use of our services</li>
+    <li>Your violation of these terms</li>
+    <li>Your violation of any third-party rights</li>
+    <li>Your conduct at any event</li>
+  </ul>
+
+  <h2>10. Privacy</h2>
+  <p>Your use of our services is also governed by our Privacy Policy. Please review our Privacy Policy to understand how we collect, use, and protect your personal information.</p>
+
+  <h2>11. Modifications to Terms</h2>
+  <p>We reserve the right to modify these Terms of Service at any time. Changes will be effective immediately upon posting on our website. Your continued use of our services after such modifications constitutes your acceptance of the updated terms.</p>
+
+  <h2>12. Governing Law</h2>
+  <p>These Terms of Service shall be governed by and construed in accordance with the laws of India. Any disputes arising under these terms shall be subject to the exclusive jurisdiction of the courts in Hyderabad, India.</p>
+
+  <h2>13. Severability</h2>
+  <p>If any provision of these Terms of Service is found to be invalid or unenforceable, the remaining provisions shall continue in full force and effect.</p>
+
+  <h2>14. Contact Information</h2>
+  <p>For questions about these Terms of Service, please contact us at:</p>
+  <p><strong>Email:</strong> info@thinklabdigitalsolutions.com</p>
+  <p><strong>Company:</strong> Thinklab Digital Solutions LLP</p>
+</section>
+
+<script src="navbar.js"></script>
+<script src="footer.js"></script>
+<script src="animations.js"></script>
+
+</body>
+</html>

@@ -13,6 +13,7 @@ const puppeteer = require("puppeteer");
 
 const ticketTemplate = require("./ticketTemplate");
 const Booking = require("./models/Booking");
+const Event = require("./models/Event");
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(express.json());
 
 app.use(cors({
   origin: [
+    "http://localhost:5000",
     "http://localhost:5500",
     "https://tldsevents.vercel.app"
   ]
@@ -55,7 +57,146 @@ const razorpay = new Razorpay({
 let activePDFs = 0;
 const MAX_PDFS = 3;
 
-/* ================= EMAIL ================= */
+/* ================= CHECK BOOKING ================= */
+
+app.post("/check-booking", async (req,res)=>{
+  try{
+    const {bookingId} = req.body;
+    
+    const booking = await Booking.findOne({bookingId});
+    if(!booking){
+      return res.json({status:"error",message:"Booking not found"});
+    }
+    
+    res.json({
+      status:"ok",
+      name: booking.name,
+      type: booking.ticketType,
+      quantity: booking.totalTickets,
+      used: booking.used || false
+    });
+  }catch(err){
+    console.error("CHECK BOOKING ERROR:", err);
+    res.status(500).json({status:"error",message:"Server error"});
+  }
+});
+
+/* ================= DOWNLOAD TICKET ================= */
+
+app.get("/download-ticket/:bookingId", async (req,res)=>{
+  try{
+    const {bookingId} = req.params;
+    
+    const booking = await Booking.findOne({bookingId});
+    if(!booking){
+      return res.status(404).json({error:"Booking not found"});
+    }
+    
+    const event = await Event.findById(booking.eventId);
+    if(!event){
+      return res.status(404).json({error:"Event not found"});
+    }
+    
+    // Generate QR code
+    const qrData = {
+      bookingId: booking.bookingId,
+      name: booking.name,
+      email: booking.email,
+      ticketType: booking.ticketType,
+      quantity: booking.totalTickets,
+      eventId: booking.eventId,
+      eventTitle: event.title,
+      timestamp: booking.createdAt
+    };
+    
+    const qrCodeDataURL = await QRCode.toDataURL(JSON.stringify(qrData));
+    
+    // Generate PDF
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    
+    const page = await browser.newPage();
+    const ticketHTML = ticketTemplate(booking, event, qrCodeDataURL);
+    
+    await page.setContent(ticketHTML);
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      printBackground: true
+    });
+    
+    await browser.close();
+    
+    // Set headers for download
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="ticket_${bookingId}.pdf"`);
+    res.send(pdfBuffer);
+    
+  }catch(err){
+    console.error("DOWNLOAD TICKET ERROR:", err);
+    res.status(500).json({error:"Failed to generate ticket"});
+  }
+});
+
+/* ================= MARK BOOKING UNUSED ================= */
+
+app.post("/mark-booking-unused", verifyAdmin, async (req,res)=>{
+  try{
+    const {bookingId} = req.body;
+    
+    const booking = await Booking.findOne({bookingId});
+    if(!booking){
+      return res.json({status:"error",message:"Booking not found"});
+    }
+    
+    booking.used = false;
+    await booking.save();
+    
+    res.json({status:"ok"});
+  }catch(err){
+    console.error("MARK BOOKING UNUSED ERROR:", err);
+    res.status(500).json({status:"error",message:"Server error"});
+  }
+});
+
+/* ================= MARK BOOKING USED ================= */
+
+app.post("/mark-booking-used", verifyAdmin, async (req,res)=>{
+  try{
+    const {bookingId} = req.body;
+    
+    const booking = await Booking.findOne({bookingId});
+    if(!booking){
+      return res.json({status:"error",message:"Booking not found"});
+    }
+    
+    booking.used = true;
+    await booking.save();
+    
+    res.json({status:"ok"});
+  }catch(err){
+    console.error("MARK BOOKING USED ERROR:", err);
+    res.status(500).json({status:"error",message:"Server error"});
+  }
+});
+
+/* ================= BOOKING ID COUNTER ================= */
+
+async function getNextBookingId() {
+  const Booking = require('./models/Booking');
+  const lastBooking = await Booking.findOne().sort({ _id: -1 });
+  
+  let nextNumber = 1;
+  if (lastBooking && lastBooking.bookingId) {
+    const lastNumber = parseInt(lastBooking.bookingId.replace('TLDS_', ''));
+    if (!isNaN(lastNumber)) {
+      nextNumber = lastNumber + 1;
+    }
+  }
+  
+  return `TLDS_${nextNumber.toString().padStart(3, '0')}`;
+}
 
 async function sendMail(email, filePath){
   try{
@@ -81,29 +222,113 @@ async function sendMail(email, filePath){
   }
 }
 
+async function sendMailBuffer(email, pdfBuffer, bookingId){
+  try{
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Your Event Ticket 🎟",
+      text: `Your booking is confirmed! Your ticket ID is ${bookingId}. Ticket is attached.`,
+      attachments: [{
+        filename: `ticket_${bookingId}.pdf`,
+        content: pdfBuffer,
+        contentType: 'application/pdf'
+      }]
+    });
+
+    console.log("MAIL SENT:", email, "Booking ID:", bookingId);
+  }catch(err){
+    console.error("MAIL ERROR:", err.message);
+  }
+}
+
 /* ================= CONFIG ================= */
 
 app.get("/config",(req,res)=>{
   res.json({key:process.env.RAZORPAY_KEY_ID});
 });
 
+/* ================= EVENTS ================= */
+
+app.get("/events", async (req,res)=>{
+  try{
+    const events = await Event.find({isActive:true}).sort({createdAt:-1});
+    res.json(events);
+  }catch(err){
+    res.status(500).json({error:"Failed to fetch events"});
+  }
+});
+
+app.get("/events/:id", async (req,res)=>{
+  try{
+    const event = await Event.findById(req.params.id);
+    if(!event) return res.status(404).json({error:"Event not found"});
+    res.json(event);
+  }catch(err){
+    res.status(500).json({error:"Failed to fetch event"});
+  }
+});
+
+app.post("/events", verifyAdmin, async (req,res)=>{
+  try{
+    const event = await Event.create(req.body);
+    res.json({success:true, event});
+  }catch(err){
+    console.error("CREATE EVENT ERROR:", err);
+    res.status(500).json({error:"Failed to create event"});
+  }
+});
+
+app.put("/events/:id", verifyAdmin, async (req,res)=>{
+  try{
+    const event = await Event.findByIdAndUpdate(req.params.id, req.body, {new:true});
+    if(!event) return res.status(404).json({error:"Event not found"});
+    res.json({success:true, event});
+  }catch(err){
+    console.error("UPDATE EVENT ERROR:", err);
+    res.status(500).json({error:"Failed to update event"});
+  }
+});
+
+app.delete("/events/:id", verifyAdmin, async (req,res)=>{
+  try{
+    const event = await Event.findByIdAndDelete(req.params.id);
+    if(!event) return res.status(404).json({error:"Event not found"});
+    res.json({success:true});
+  }catch(err){
+    console.error("DELETE EVENT ERROR:", err);
+    res.status(500).json({error:"Failed to delete event"});
+  }
+});
+
 /* ================= AVAILABILITY ================= */
 
 app.get("/availability", async (req,res)=>{
+  const eventId = req.query.eventId;
 
   const single = await Booking.aggregate([
-    {$match:{ticketType:"single"}},
+    {$match:{ticketType:"single", eventId}},
     {$group:{_id:null,total:{$sum:"$totalTickets"}}}
   ]);
 
   const couple = await Booking.aggregate([
-    {$match:{ticketType:"couple"}},
+    {$match:{ticketType:"couple", eventId}},
     {$group:{_id:null,total:{$sum:"$totalTickets"}}}
   ]);
 
+  const event = await Event.findById(eventId);
+
   res.json({
-    singleAvailable: TOTAL_LIMIT.single - (single[0]?.total || 0),
-    coupleAvailable: TOTAL_LIMIT.couple - (couple[0]?.total || 0)
+    singleAvailable: (event?.singleLimit || 100) - (single[0]?.total || 0),
+    coupleAvailable: (event?.coupleLimit || 25) - (couple[0]?.total || 0)
   });
 
 });
@@ -136,7 +361,9 @@ app.post("/verify-payment", async (req,res)=>{
     name,
     email,
     ticketType,
-    quantity
+    quantity,
+    eventId,
+    eventTitle
   } = req.body;
 
   const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -150,31 +377,46 @@ app.post("/verify-payment", async (req,res)=>{
     return res.json({status:"failure"});
   }
 
+  const event = await Event.findById(eventId);
+  if(!event) return res.json({status:"invalid_event"});
+
   if(ticketType === "single" && quantity > 10) return res.json({status:"max_limit"});
   if(ticketType === "couple" && quantity > 5) return res.json({status:"max_limit"});
 
   const sold = await Booking.aggregate([
-    {$match:{ticketType}},
+    {$match:{ticketType, eventId}},
     {$group:{_id:null,total:{$sum:"$totalTickets"}}}
   ]);
 
-  const available = TOTAL_LIMIT[ticketType] - (sold[0]?.total || 0);
+  const limit = ticketType === "single" ? event.singleLimit : event.coupleLimit;
+  const available = limit - (sold[0]?.total || 0);
 
   if(quantity > available){
     return res.json({status:"sold_out"});
   }
 
-  const bookingId = "TLDS_" + Date.now();
+  const bookingId = await getNextBookingId();
 
   await Booking.create({
     bookingId,
     name,
     email,
     ticketType,
-    totalTickets: quantity
+    totalTickets: quantity,
+    eventId,
+    eventTitle
   });
 
-  const qrData = JSON.stringify({bookingId,name,ticketType,quantity});
+  const qrData = JSON.stringify({
+    bookingId,
+    name,
+    email,
+    ticketType,
+    quantity,
+    eventId,
+    eventTitle,
+    timestamp: new Date().toISOString()
+  });
   const qrImage = await QRCode.toDataURL(qrData);
 
   /* FAST RESPONSE */
@@ -188,7 +430,7 @@ app.post("/verify-payment", async (req,res)=>{
     qrData
   });
 
-  /* BACKGROUND WORK */
+  /* BACKGROUND WORK - Generate PDF in memory only */
 
   setImmediate(async () => {
 
@@ -200,11 +442,6 @@ app.post("/verify-payment", async (req,res)=>{
     activePDFs++;
 
     try{
-
-      const uploadDir = path.join(__dirname,"uploads");
-      if(!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
-
-      const filePath = path.join(uploadDir, "ticket_"+Date.now()+".pdf");
 
       const html = ticketTemplate({
         name,
@@ -222,15 +459,15 @@ app.post("/verify-payment", async (req,res)=>{
       const page = await browser.newPage();
       await page.setContent(html,{waitUntil:"networkidle0"});
 
-      await page.pdf({
-        path:filePath,
+      const pdfBuffer = await page.pdf({
         format:"A4",
         printBackground:true
       });
 
       await browser.close();
 
-      await sendMail(email,filePath);
+      // Send email with PDF buffer (no local file)
+      await sendMailBuffer(email, pdfBuffer, bookingId);
 
       console.log("DONE:", bookingId);
 
@@ -269,14 +506,16 @@ app.post("/admin-login",(req,res)=>{
 app.get("/admin-data", verifyAdmin, async (req,res)=>{
 
   try{
+    const eventId = req.query.eventId;
 
-    const bookings = await Booking.find().sort({ _id: -1 });
+    const bookings = await Booking.find(eventId ? {eventId} : {}).sort({ _id: -1 });
+    const events = await Event.find({isActive:true});
 
     let single = 0;
     let couple = 0;
+    let totalRevenue = 0;
 
     bookings.forEach(b => {
-
       const type = (b.ticketType || "").toLowerCase().trim();
       const qty = Number(b.totalTickets) || 0;
 
@@ -286,20 +525,42 @@ app.get("/admin-data", verifyAdmin, async (req,res)=>{
       else if(type === "couple"){
         couple += qty;
       }
-
     });
 
+    // Calculate revenue based on event prices
+    if(eventId){
+      const event = await Event.findById(eventId);
+      if(event){
+        totalRevenue = (single * event.singlePrice) + (couple * event.couplePrice);
+      }
+    }else{
+      // Calculate revenue for all events
+      for(const booking of bookings){
+        const event = await Event.findById(booking.eventId);
+        if(event){
+          const qty = Number(booking.totalTickets) || 0;
+          if(booking.ticketType === "single"){
+            totalRevenue += qty * event.singlePrice;
+          }else if(booking.ticketType === "couple"){
+            totalRevenue += qty * event.couplePrice;
+          }
+        }
+      }
+    }
+
     const stats = {
-      totalRevenue: (single * 499) + (couple * 899),
+      totalRevenue,
       singleSold: single,
-      coupleSold: couple
+      coupleSold: couple,
+      eventId
     };
 
     console.log("STATS:", stats);
 
     res.json({
       bookings,
-      stats
+      stats,
+      events
     });
 
   }catch(err){
@@ -312,6 +573,41 @@ app.get("/admin-data", verifyAdmin, async (req,res)=>{
 app.delete("/delete-booking", verifyAdmin, async (req,res)=>{
   await Booking.deleteOne({bookingId:req.body.bookingId});
   res.json({status:"deleted"});
+});
+
+/* ================= CONTACT FORM ================= */
+
+app.post("/contact", async (req,res)=>{
+  try{
+    const { name, email, subject, message } = req.body;
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER,
+      subject: `Contact Form: ${subject}`,
+      text: `
+Name: ${name}
+Email: ${email}
+Subject: ${subject}
+
+Message:
+${message}
+      `
+    });
+
+    res.json({success:true});
+  }catch(err){
+    console.error("CONTACT FORM ERROR:", err);
+    res.status(500).json({success:false});
+  }
 });
 
 /* ================= START ================= */

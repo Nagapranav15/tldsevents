@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Booking Confirmed</title>
+<title>Booking Confirmed - TLDS Events | Thinklab Digital Solutions LLP</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="animations.css">
 
 <style>
 :root{
@@ -14,17 +15,87 @@
   --accent:#A280FF;
   --text:#fff;
   --muted:#aaa;
+  --gradient:linear-gradient(135deg, #A280FF 0%, #7B68EE 100%);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
 }
 
 body{
-  margin:0;
-  font-family:'League Spartan',sans-serif;
+  font-family:'Poppins',sans-serif;
   background:var(--bg);
   color:var(--text);
+  min-height:100vh;
   display:flex;
-  justify-content:center;
+  flex-direction:column;
+}
+
+/* NAVBAR */
+
+.navbar{
+  width:100%;
+  background:rgba(19,20,20,0.95);
+  backdrop-filter:blur(10px);
+  padding:15px 30px;
+  position:sticky;
+  top:0;
+  z-index:1000;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+.nav-container{
+  max-width:1400px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
   align-items:center;
-  height:100vh;
+}
+
+.logo img{
+  height:50px;
+}
+
+.nav-links{
+  display:flex;
+  gap:30px;
+}
+
+.nav-links a{
+  color:var(--text);
+  text-decoration:none;
+  font-size:14px;
+  font-weight:500;
+  transition:0.3s;
+  position:relative;
+}
+
+.nav-links a:hover{
+  color:var(--accent);
+}
+
+.nav-links a::after{
+  content:'';
+  position:absolute;
+  bottom:-5px;
+  left:0;
+  width:0;
+  height:2px;
+  background:var(--accent);
+  transition:0.3s;
+}
+
+.nav-links a:hover::after{
+  width:100%;
+}
+
+@media(max-width:768px){
+  .nav-links{
+    display:none;
+  }
 }
 
 .container{
@@ -34,6 +105,9 @@ body{
   text-align:center;
   width:340px;
   box-shadow:0 20px 60px rgba(0,0,0,0.6);
+  margin:auto;
+  margin-top:50px;
+  margin-bottom:50px;
 }
 
 h1{
@@ -73,6 +147,185 @@ button{
   border-radius:8px;
   cursor:pointer;
   margin-top:10px;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(162, 128, 255, 0.4);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* MOBILE RESPONSIVE STYLES */
+
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    margin: 30px auto;
+  }
+  
+  h1 {
+    font-size: 28px;
+    margin-bottom: 15px;
+  }
+  
+  .info {
+    margin-top: 12px;
+  }
+  
+  .info p {
+    margin: 8px 0;
+    font-size: 14px;
+  }
+  
+  .info span {
+    font-size: 14px;
+  }
+  
+  .qr {
+    margin: 15px 0;
+  }
+  
+  .qr img {
+    width: 150px;
+    height: 150px;
+    border-radius: 8px;
+    padding: 8px;
+  }
+  
+  button {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+  
+  button:first-of-type {
+    margin-top: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: 95%;
+    padding: 15px;
+    margin: 20px auto;
+  }
+  
+  h1 {
+    font-size: 24px;
+  }
+  
+  .qr img {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .info p {
+    font-size: 13px;
+    margin: 6px 0;
+  }
+  
+  button {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+}
+
+/* MOBILE ANIMATIONS */
+
+@media (max-width: 768px) {
+  .container {
+    animation: mobileFadeInUp 0.8s ease-out;
+  }
+  
+  h1 {
+    animation: mobileFadeInUp 0.8s ease-out 0.2s both;
+  }
+  
+  .info {
+    animation: mobileFadeInUp 0.8s ease-out 0.4s both;
+  }
+  
+  .qr {
+    animation: mobileFadeInUp 0.8s ease-out 0.6s both;
+  }
+  
+  button {
+    animation: mobileFadeInUp 0.8s ease-out 0.8s both;
+  }
+}
+
+/* TOUCH INTERACTIONS */
+
+@media (hover: none) and (pointer: coarse) {
+  button:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+  }
+  
+  .qr img:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* FOOTER */
+
+footer{
+  background:#0d0d0d;
+  padding:50px 30px 30px;
+  margin-top:100px;
+  border-top:1px solid rgba(255,255,255,0.1);
+}
+
+.footer-content{
+  max-width:1400px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:40px;
+}
+
+.footer-section h4{
+  color:var(--accent);
+  margin-bottom:20px;
+  font-size:18px;
+}
+
+.footer-section p{
+  color:var(--muted);
+  line-height:1.6;
+  font-size:14px;
+}
+
+.footer-section a{
+  display:block;
+  color:var(--muted);
+  text-decoration:none;
+  margin-bottom:10px;
+  font-size:14px;
+  transition:0.3s;
+}
+
+.footer-section a:hover{
+  color:var(--accent);
+}
+
+.footer-bottom{
+  max-width:1400px;
+  margin:auto;
+  margin-top:50px;
+  padding-top:30px;
+  border-top:1px solid rgba(255,255,255,0.1);
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
 }
 </style>
 
@@ -80,7 +333,10 @@ button{
 
 <body>
 
-<div class="container">
+<!-- SCROLL PROGRESS BAR -->
+<div class="scroll-progress"></div>
+
+<div class="container animate-fadeInUp">
 
 <h1>🎉 Booking Confirmed</h1>
 <p>Your tickets are ready</p>
@@ -107,6 +363,10 @@ Show this QR at entry
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
+
+/* CONFIG */
+
+const BASE_URL = window.location.origin; // Dynamic URL for deployment
 
 /* GET DATA */
 
@@ -139,8 +399,8 @@ document.getElementById("qrImage").src =
 /* DOWNLOAD */
 
 document.getElementById("downloadBtn").onclick = function(){
-  if(file){
-    window.open(file, "_blank");
+  if(bookingID){
+    window.open(`${BASE_URL}/download-ticket/${bookingID}`, "_blank");
   }else{
     alert("Download not available");
   }
@@ -161,6 +421,10 @@ function goHome(){
 }
 
 </script>
+
+<script src="navbar.js"></script>
+<script src="footer.js"></script>
+<script src="animations.js"></script>
 
 </body>
 </html>
