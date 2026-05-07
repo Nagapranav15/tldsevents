@@ -1,4 +1,4 @@
-const BASE_URL = window.location.origin; // Dynamic URL for deployment
+const BASE_URL = "https://tldsevents-backend.onrender.com"; // Production backend URL
 
 window.pay = async function(){
 
