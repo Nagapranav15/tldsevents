@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <div class="footer-content">
     <div class="footer-section">
       <h4>About TLDS Events</h4>
-      <p>TLDS Events is an event booking platform brought to you by Thinklab Digital Solutions LLP. We provide seamless ticket booking experiences for concerts, conferences, and various events across India.</p>
+      <p>TLDS Events is an event booking platform brought to you by Thinklab Digital Solutions LLP. We provide seamless ticket booking experiences for concerts, conferences, and various events across India. Contact us at info@thinklabdigitalsolutions.com</p>
     </div>
     <div class="footer-section">
       <h4>Quick Links</h4>

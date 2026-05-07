@@ -590,9 +590,88 @@ button:disabled{
   width:100%;
 }
 
+/* Mobile Responsive Styles */
 @media(max-width:768px){
-  .nav-links{
-    display:none;
+  section{
+    padding:60px 20px;
+  }
+  
+  .hero h1{
+    font-size:42px;
+    letter-spacing:-1px;
+  }
+  
+  .hero p{
+    font-size:16px;
+  }
+  
+  .events-grid{
+    grid-template-columns:1fr;
+    gap:20px;
+  }
+  
+  .event-card{
+    padding:20px;
+  }
+  
+  .event-card h3{
+    font-size:22px;
+  }
+  
+  .event-date{
+    font-size:14px;
+  }
+  
+  .event-description{
+    font-size:14px;
+  }
+  
+  .event-price{
+    font-size:18px;
+  }
+  
+  .btn{
+    padding:12px 24px;
+    font-size:14px;
+  }
+}
+
+@media(max-width:480px){
+  section{
+    padding:40px 15px;
+  }
+  
+  .hero h1{
+    font-size:32px;
+  }
+  
+  .hero p{
+    font-size:14px;
+  }
+  
+  .event-card{
+    padding:15px;
+  }
+  
+  .event-card h3{
+    font-size:20px;
+  }
+  
+  .event-date{
+    font-size:13px;
+  }
+  
+  .event-description{
+    font-size:13px;
+  }
+  
+  .event-price{
+    font-size:16px;
+  }
+  
+  .btn{
+    padding:10px 20px;
+    font-size:13px;
   }
 }
 

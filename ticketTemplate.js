@@ -188,7 +188,7 @@ body {
   <b>Terms & Conditions:</b><br><br>
 
   • Seating will be based on First Come First Served basis.<br>
-  • The Event Has been listed by Thinklab Digital Solutions, any issues please contact them.<br>
+  • The Event Has been listed by Thinklab Digital Solutions LLP, any issues please contact us at info@thinklabdigitalsolutions.com.<br>
   • Entry allowed only with valid QR code.<br>
   • If you were denied entry, please email at info@thinklabdigitalsolutions.com<br>
   • All refund requests must be submitted to @info@thinklabdigitalsolutions.com within 2 days of the event's completion. Any requests received after this period — whether for denied entry or other reasons — will not be processed unless the event was ocially cancelled. In such cases, customers will need to directly contact the venue or event organiser for any further assistance regarding refunds.<br>
