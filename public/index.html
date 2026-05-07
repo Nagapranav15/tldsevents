@@ -528,69 +528,10 @@ button:disabled{
   text-align:center;
 }
 
-/* NAVBAR */
+/* Navbar styles are now handled by navbar.js */
 
-.navbar{
-  width:100%;
-  background:transparent;
-  padding:15px 30px;
-  position:sticky;
-  top:0;
-  z-index:1000;
-  transition:all 0.3s;
-}
+/* MOBILE RESPONSIVE STYLES */
 
-.nav-container{
-  max-width:1400px;
-  margin:auto;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.logo img{
-  height:50px;
-}
-
-.nav-links{
-  display:flex;
-  gap:30px;
-}
-
-.nav-links a{
-  color:var(--text);
-  text-decoration:none;
-  font-size:14px;
-  font-weight:500;
-  transition:0.3s;
-  position:relative;
-}
-
-.nav-links a:hover{
-  color:var(--accent);
-}
-
-.nav-links a.active{
-  color:var(--accent);
-}
-
-.nav-links a::after{
-  content:'';
-  position:absolute;
-  bottom:-5px;
-  left:0;
-  width:0;
-  height:2px;
-  background:var(--accent);
-  transition:0.3s;
-}
-
-.nav-links a:hover::after,
-.nav-links a.active::after{
-  width:100%;
-}
-
-/* Mobile Responsive Styles */
 @media(max-width:768px){
   section{
     padding:60px 20px;

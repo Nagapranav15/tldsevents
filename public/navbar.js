@@ -206,17 +206,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const hamburger = document.getElementById('hamburger');
   const navLinks = document.getElementById('navLinks');
   
-  console.log('Hamburger:', hamburger);
-  console.log('NavLinks:', navLinks);
-  
   if (hamburger && navLinks) {
     hamburger.addEventListener('click', (e) => {
       e.preventDefault();
-      console.log('Hamburger clicked');
       hamburger.classList.toggle('active');
       navLinks.classList.toggle('active');
-      console.log('Classes - Hamburger:', hamburger.classList.toString());
-      console.log('Classes - NavLinks:', navLinks.classList.toString());
     });
     
     // Close mobile menu when clicking on a link
