@@ -553,7 +553,7 @@ async function loadEvent(){
   }
 
   try{
-    const response = await fetch(`/events/${eventId}`);
+    const response = await fetch(`https://tldsevents-backend.onrender.com/events/${eventId}`);
     const event = await response.json();
 
     if(!event){
@@ -617,7 +617,7 @@ async function loadEvent(){
 }
 
 function loadAvailability(eventId){
-  fetch(`/availability?eventId=${eventId}`)
+  fetch(`https://tldsevents-backend.onrender.com/availability?eventId=${eventId}`)
     .then(res => res.json())
     .then(data => {
       const availabilityDiv = document.getElementById('availability');
@@ -714,7 +714,7 @@ async function initiatePayment(){
 
   try{
     // Get Razorpay key from config
-    const configRes = await fetch("/config");
+    const configRes = await fetch("https://tldsevents-backend.onrender.com/config");
     if(!configRes.ok) throw new Error("Failed to get config");
     const {key} = await configRes.json();
     
@@ -722,7 +722,7 @@ async function initiatePayment(){
     console.log("Amount:", amount);
 
     // Create order
-    const orderRes = await fetch("/create-order",{
+    const orderRes = await fetch("https://tldsevents-backend.onrender.com/create-order",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({amount})
@@ -751,7 +751,7 @@ async function initiatePayment(){
         console.log("Payment successful:", response);
         status.textContent = "Verifying payment...";
         
-        fetch("/verify-payment",{
+        fetch("https://tldsevents-backend.onrender.com/verify-payment",{
           method:"POST",
           headers:{"Content-Type":"application/json"},
           body: JSON.stringify({
