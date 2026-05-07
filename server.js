@@ -278,6 +278,32 @@ app.get("/events/:id", async (req,res)=>{
   }
 });
 
+// Get past events (inactive events)
+app.get("/past-events", async (req,res)=>{
+  try{
+    const events = await Event.find({isActive:false}).sort({createdAt:-1});
+    res.json(events);
+  }catch(err){
+    res.status(500).json({error:"Failed to fetch past events"});
+  }
+});
+
+// Update event status (active/inactive)
+app.put("/events/:id/status", async (req,res)=>{
+  try{
+    const {isActive} = req.body;
+    const event = await Event.findByIdAndUpdate(
+      req.params.id,
+      {isActive},
+      {new:true}
+    );
+    if(!event) return res.status(404).json({error:"Event not found"});
+    res.json({success:true, event});
+  }catch(err){
+    res.status(500).json({error:"Failed to update event status"});
+  }
+});
+
 app.post("/events", verifyAdmin, async (req,res)=>{
   try{
     const event = await Event.create(req.body);
@@ -510,7 +536,7 @@ app.get("/admin-data", verifyAdmin, async (req,res)=>{
     const eventId = req.query.eventId;
 
     const bookings = await Booking.find(eventId ? {eventId} : {}).sort({ _id: -1 });
-    const events = await Event.find({isActive:true});
+    const events = await Event.find({}).sort({ createdAt: -1 });
 
     let single = 0;
     let couple = 0;

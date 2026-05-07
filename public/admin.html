@@ -95,6 +95,52 @@ body{
   }
 }
 
+/* Toggle Switch Styles */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--accent);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
 /* LOGIN SECTION */
 
 h2{
@@ -773,7 +819,13 @@ html += `
 <td>₹${e.couplePrice}</td>
 <td>${e.singleLimit}</td>
 <td>${e.coupleLimit}</td>
-<td>${e.isActive ? 'Active' : 'Inactive'}</td>
+<td>
+  <label class="switch">
+    <input type="checkbox" ${e.isActive ? 'checked' : ''} onchange="toggleEventStatus('${e._id}', this.checked)">
+    <span class="slider"></span>
+  </label>
+  <span style="margin-left:10px; font-size:12px;">${e.isActive ? 'Active' : 'Inactive'}</span>
+</td>
 <td>
   <button onclick="editEvent('${e._id}')" style="background:#4ade80; margin-right:5px;">Edit</button>
   <button onclick="deleteEvent('${e._id}')">Delete</button>
@@ -858,6 +910,36 @@ function deleteEvent(eventId){
   })
   .catch(err => {
     alert("Error deleting event");
+  });
+}
+
+function toggleEventStatus(eventId, isActive){
+  const token = localStorage.getItem("adminToken");
+  
+  fetch(BASE_URL + "/events/" + eventId + "/status",{
+    method:"PUT",
+    headers:{
+      "Authorization":"Bearer " + token,
+      "Content-Type":"application/json"
+    },
+    body: JSON.stringify({isActive})
+  })
+  .then(res => {
+    if(res.status === 403){
+      alert("Unauthorized");
+      return;
+    }
+    return res.json();
+  })
+  .then(data => {
+    if(data.success){
+      loadDashboard(); // Refresh the dashboard to show updated status
+    } else {
+      alert("Error updating event status");
+    }
+  })
+  .catch(err => {
+    alert("Error updating event status");
   });
 }
 
