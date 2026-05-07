@@ -30,12 +30,79 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </nav>
 <style>
+/* Base Navigation Styles */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(19, 20, 20, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  padding: 15px 30px;
+  transition: transform 0.3s ease;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.logo img {
+  height: 50px;
+  width: auto;
+  transition: transform 0.3s ease;
+}
+
+.logo img:hover {
+  transform: scale(1.05);
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.nav-links a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 16px;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: var(--accent);
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--accent);
+  transition: 0.3s;
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+  width: 100%;
+}
+
 /* Mobile Navigation Styles */
 .hamburger {
   display: none;
   flex-direction: column;
   cursor: pointer;
   padding: 5px;
+  z-index: 1001;
 }
 
 .hamburger span {
@@ -139,10 +206,17 @@ document.addEventListener('DOMContentLoaded', function() {
   const hamburger = document.getElementById('hamburger');
   const navLinks = document.getElementById('navLinks');
   
+  console.log('Hamburger:', hamburger);
+  console.log('NavLinks:', navLinks);
+  
   if (hamburger && navLinks) {
-    hamburger.addEventListener('click', () => {
+    hamburger.addEventListener('click', (e) => {
+      e.preventDefault();
+      console.log('Hamburger clicked');
       hamburger.classList.toggle('active');
       navLinks.classList.toggle('active');
+      console.log('Classes - Hamburger:', hamburger.classList.toString());
+      console.log('Classes - NavLinks:', navLinks.classList.toString());
     });
     
     // Close mobile menu when clicking on a link
