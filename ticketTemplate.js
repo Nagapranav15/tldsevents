@@ -156,7 +156,7 @@ body {
 
       <div class="venue-title">VENUE</div>
       <div class="venue">
-        ICON Sports, Vijayawada
+        Novotel, Vijayawada
       </div>
     </div>
 
