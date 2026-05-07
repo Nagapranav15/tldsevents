@@ -25,8 +25,9 @@ app.use(cors({
   origin: [
     "http://localhost:5000",
     "http://localhost:5500",
-    "https://tldsevents.vercel.app"
-  ]
+    "https://tldsevents.vercel.app",
+    process.env.RENDER_EXTERNAL_URL
+  ].filter(Boolean)
 }));
 
 app.use(express.static("public"));

@@ -17,23 +17,17 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="footer-section">
       <h4>Contact</h4>
       <p>Email: info@thinklabdigitalsolutions.com</p>
-      <p>Phone: +91 1234567890</p>
+      
     </div>
     <div class="footer-section">
       <h4>Company</h4>
       <p>Thinklab Digital Solutions LLP</p>
-      <p>Registered LLP Company</p>
-      <p>GSTIN: 29AAKFT1234C1ZV</p>
+      
     </div>
   </div>
   <div class="footer-bottom">
     <p>&copy; 2026 Thinklab Digital Solutions LLP. All rights reserved.</p>
-    <div class="social-links">
-      <a href="#" aria-label="Facebook">📘</a>
-      <a href="#" aria-label="Twitter">🐦</a>
-      <a href="#" aria-label="Instagram">📷</a>
-      <a href="#" aria-label="LinkedIn">💼</a>
-    </div>
+    
   </div>
 </footer>
 <style>
