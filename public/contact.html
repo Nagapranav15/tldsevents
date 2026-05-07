@@ -327,30 +327,32 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
   const message = document.getElementById('message').value;
   
   const status = document.getElementById('status');
-  status.style.color = '#4ade80';
-  status.textContent = 'Sending...';
   
-  fetch('https://tldsevents-backend.onrender.com/contact', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ name, email, subject, message })
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      status.textContent = 'Message sent successfully!';
-      document.getElementById('contactForm').reset();
-    } else {
-      status.style.color = '#ff6b6b';
-      status.textContent = 'Failed to send message. Please try again.';
-    }
-  })
-  .catch(error => {
+  // Validate form
+  if (!name || !email || !subject || !message) {
     status.style.color = '#ff6b6b';
-    status.textContent = 'Error: ' + error.message;
-  });
+    status.textContent = 'Please fill in all fields';
+    return;
+  }
+  
+  // Create email content
+  const emailSubject = encodeURIComponent(`Contact Form: ${subject}`);
+  const emailBody = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nSubject: ${subject}\n\nMessage:\n${message}`);
+  
+  // Open email client
+  const mailtoLink = `mailto:info@thinklabdigitalsolutions.com?subject=${emailSubject}&body=${emailBody}`;
+  
+  status.style.color = '#4ade80';
+  status.textContent = 'Opening your email client...';
+  
+  // Try to open email client
+  window.location.href = mailtoLink;
+  
+  // Show success message after a short delay
+  setTimeout(() => {
+    status.textContent = 'Email client opened! Please send the email to complete your inquiry.';
+    document.getElementById('contactForm').reset();
+  }, 1000);
 });
 </script>
 
