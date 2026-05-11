@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
     <div class="nav-links" id="navLinks">
       <a href="index.html" class="${currentPage === 'index.html' ? 'active' : ''}">Home</a>
+      <a href="https://www.thinklabdigitalsolutions.com" target="_blank" rel="noopener noreferrer">Our Website</a>
       <a href="privacy.html" class="${currentPage === 'privacy.html' ? 'active' : ''}">Privacy Policy</a>
       <a href="refund.html" class="${currentPage === 'refund.html' ? 'active' : ''}">Refund Policy</a>
       <a href="terms.html" class="${currentPage === 'terms.html' ? 'active' : ''}">Terms of Service</a>

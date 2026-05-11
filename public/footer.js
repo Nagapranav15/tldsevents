@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="footer-section">
       <h4>Quick Links</h4>
       <a href="index.html">Home</a>
+      <a href="https://www.thinklabdigitalsolutions.com" target="_blank" rel="noopener noreferrer">Our Website</a>
       <a href="privacy.html">Privacy Policy</a>
       <a href="refund.html">Refund Policy</a>
       <a href="terms.html">Terms of Service</a>
@@ -22,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="footer-section">
       <h4>Company</h4>
       <p>Thinklab Digital Solutions LLP</p>
-      
+      <a href="https://www.thinklabdigitalsolutions.com" target="_blank" rel="noopener noreferrer">Visit Our Website</a>
     </div>
   </div>
   <div class="footer-bottom">
