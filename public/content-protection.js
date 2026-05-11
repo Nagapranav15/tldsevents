@@ -153,7 +153,7 @@
         }, 1000);
     })();
 
-    // Add CSS to disable selection and screenshot deterrence
+    // Add CSS to disable selection
     const style = document.createElement('style');
     style.textContent = `
         * {
@@ -170,86 +170,8 @@
             -ms-user-select: none !important;
             user-select: none !important;
         }
-
-        /* Screenshot deterrent - hide content when printing */
-        @media print {
-            body {
-                display: none !important;
-            }
-            body::before {
-                content: "Printing is disabled";
-                display: block;
-                text-align: center;
-                font-size: 20px;
-                padding: 50px;
-            }
-        }
-
-        /* Watermark overlay */
-        body::after {
-            content: "TLDS EVENTS | CONFIDENTIAL";
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 60px;
-            color: rgba(255, 255, 255, 0.03);
-            pointer-events: none;
-            z-index: 999999;
-            white-space: nowrap;
-            font-weight: bold;
-            letter-spacing: 10px;
-        }
     `;
     document.head.appendChild(style);
-
-    // Screenshot deterrent - detect Print Screen key
-    document.addEventListener('keyup', function(e) {
-        // Print Screen key
-        if (e.key === 'PrintScreen' || e.keyCode === 44) {
-            // Flash screen white
-            const flash = document.createElement('div');
-            flash.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: white;
-                z-index: 9999999;
-                pointer-events: none;
-            `;
-            document.body.appendChild(flash);
-            setTimeout(() => flash.remove(), 100);
-            
-            // Alert user
-            alert('Screenshots are not permitted');
-        }
-    }, true);
-
-    // Detect window blur (possible screenshot tool activation)
-    let blurCount = 0;
-    window.addEventListener('blur', function() {
-        blurCount++;
-        if (blurCount > 2) {
-            // Multiple blurs might indicate screenshot tool
-            document.body.style.filter = 'blur(5px)';
-            setTimeout(() => {
-                document.body.style.filter = 'none';
-            }, 500);
-        }
-    });
-
-    // Visibility API - detect if page is being recorded
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            // Page not visible - could be screenshot
-            document.body.style.opacity = '0';
-            setTimeout(() => {
-                document.body.style.opacity = '1';
-            }, 500);
-        }
-    });
 
     console.log('Content protection enabled');
 })();
