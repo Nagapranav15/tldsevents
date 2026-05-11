@@ -176,30 +176,37 @@ async function loadAvailability(){
 
 /* ================= LIMIT CONTROL ================= */
 
-document.getElementById("ticketType").addEventListener("change", function(){
+// Only run on event.html where ticketType exists
+const ticketTypeSelect = document.getElementById("ticketType");
+if (ticketTypeSelect) {
+  ticketTypeSelect.addEventListener("change", function(){
+    const type = this.value;
+    const quantityInput = document.getElementById("quantity");
 
-  const type = this.value;
-  const quantityInput = document.getElementById("quantity");
+    if(type === "single"){
+      quantityInput.max = 10;
+    }else if(type === "couple"){
+      quantityInput.max = 5;
+    }else{
+      quantityInput.max = 1;
+    }
 
-  if(type === "single"){
-    quantityInput.max = 10;
-  }else if(type === "couple"){
-    quantityInput.max = 5;
-  }else{
-    quantityInput.max = 1;
-  }
-
-  quantityInput.value = 1;
-});
+    quantityInput.value = 1;
+  });
+}
 
 /* ================= INIT ================= */
 
 window.onload = loadAvailability;
 
-document.getElementById("quantity").addEventListener("input", function(){
-  const max = this.max ? parseInt(this.max) : 1;
+// Only add quantity listener if element exists (event.html)
+const quantityInput = document.getElementById("quantity");
+if (quantityInput) {
+  quantityInput.addEventListener("input", function(){
+    const max = this.max ? parseInt(this.max) : 1;
 
-  if(this.value > max){
-    this.value = max;
-  }
-});
+    if(this.value > max){
+      this.value = max;
+    }
+  });
+}
