@@ -547,15 +547,21 @@ footer{
 <script>
 const urlParams = new URLSearchParams(window.location.search);
 const eventId = urlParams.get('id');
+const eventName = urlParams.get('name');
 
 async function loadEvent(){
-  if(!eventId){
-    document.getElementById('eventContainer').innerHTML = '<div class="error">Event ID not provided</div>';
+  if(!eventId && !eventName){
+    document.getElementById('eventContainer').innerHTML = '<div class="error">Event ID or Name not provided</div>';
     return;
   }
 
   try{
-    const response = await fetch(TLDS_CONFIG.ENDPOINTS.event(eventId));
+    // Build endpoint based on whether ID or name is provided
+    const endpoint = eventId 
+      ? TLDS_CONFIG.ENDPOINTS.event(eventId)
+      : `${TLDS_CONFIG.BASE_URL}/event-by-name?name=${encodeURIComponent(eventName)}`;
+    
+    const response = await fetch(endpoint);
     const event = await response.json();
 
     if(!event){

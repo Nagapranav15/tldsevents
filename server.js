@@ -307,7 +307,25 @@ app.get("/events/:id", async (req,res)=>{
     if(!event) return res.status(404).json({error:"Event not found"});
     res.json(event);
   }catch(err){
-    res.status(500).json({error:"Failed to fetch event"});
+    res.status(500).json({error:err.message});
+  }
+});
+
+// Get event by name (for SEO-friendly URLs)
+app.get("/event-by-name", async (req,res)=>{
+  try{
+    const eventName = req.query.name;
+    if(!eventName) return res.status(400).json({error:"Event name required"});
+    
+    // Case-insensitive search for event title
+    const event = await Event.findOne({
+      title: { $regex: new RegExp("^" + eventName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "$", "i") }
+    });
+    
+    if(!event) return res.status(404).json({error:"Event not found"});
+    res.json(event);
+  }catch(err){
+    res.status(500).json({error:err.message});
   }
 });
 
