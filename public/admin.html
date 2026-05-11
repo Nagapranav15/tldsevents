@@ -605,11 +605,11 @@ footer{
 
 <div id="panel" style="display:none"></div>
 
+<script src="config.js"></script>
 <script>
 
-/* 🔥 CHANGE THIS AFTER DEPLOY */
-const BASE_URL = "https://tldsevents-backend.onrender.com"; // Production backend URL
-// const BASE_URL = "https://your-backend.onrender.com";
+// Using centralized config from config.js
+// BASE_URL is automatically set based on environment
 
 let isLoggedIn = false;
 let selectedEventId = "";
@@ -618,7 +618,7 @@ let selectedEventId = "";
 
 function login(){
 
-fetch(BASE_URL + "/admin-login",{
+fetch(TLDS_CONFIG.ENDPOINTS.admin.login,{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body: JSON.stringify({
@@ -656,7 +656,7 @@ const panel = document.getElementById("panel");
 panel.style.display = "block";
 
 const token = localStorage.getItem("adminToken");
-let url = BASE_URL + "/admin-data";
+let url = TLDS_CONFIG.ENDPOINTS.admin.data;
 if(selectedEventId){
   url += "?eventId=" + selectedEventId;
 }
@@ -895,7 +895,7 @@ function deleteEvent(eventId){
   
   const token = localStorage.getItem("adminToken");
   
-  fetch(BASE_URL + "/events/" + eventId,{
+  fetch(TLDS_CONFIG.ENDPOINTS.admin.deleteEvent(eventId),{
     method:"DELETE",
     headers:{
       "Authorization":"Bearer " + token
@@ -916,7 +916,7 @@ function deleteEvent(eventId){
 function toggleEventStatus(eventId, isActive){
   const token = localStorage.getItem("adminToken");
   
-  fetch(BASE_URL + "/events/" + eventId + "/status",{
+  fetch(TLDS_CONFIG.ENDPOINTS.admin.updateEventStatus(eventId),{
     method:"PUT",
     headers:{
       "Authorization":"Bearer " + token,
@@ -946,7 +946,7 @@ function toggleEventStatus(eventId, isActive){
 function editEvent(eventId){
   const token = localStorage.getItem("adminToken");
   
-  fetch(BASE_URL + "/events/" + eventId,{
+  fetch(TLDS_CONFIG.ENDPOINTS.event(eventId),{
     headers:{
       "Authorization":"Bearer " + token
     }
@@ -1033,7 +1033,7 @@ function saveEvent(){
   status.style.color = "#4ade80";
   status.textContent = editEventId ? "Updating event..." : "Creating event...";
   
-  const url = editEventId ? BASE_URL + "/events/" + editEventId : BASE_URL + "/events";
+  const url = editEventId ? TLDS_CONFIG.ENDPOINTS.admin.updateEvent(editEventId) : TLDS_CONFIG.ENDPOINTS.admin.createEvent;
   const method = editEventId ? "PUT" : "POST";
   
   fetch(url,{
@@ -1077,7 +1077,7 @@ function markUnused(bookingId){
   
   const token = localStorage.getItem("adminToken");
   
-  fetch(BASE_URL + "/mark-booking-unused",{
+  fetch(TLDS_CONFIG.ENDPOINTS.markBookingUnused,{
     method:"POST",
     headers:{
       "Content-Type":"application/json",
@@ -1110,7 +1110,7 @@ if(!confirm("Delete this booking?")) return;
 
 const token = localStorage.getItem("adminToken");
 
-fetch(BASE_URL + "/delete-booking",{
+fetch(TLDS_CONFIG.ENDPOINTS.admin.deleteBooking,{
 method:"DELETE",
 headers:{
   "Content-Type":"application/json",
@@ -1240,7 +1240,7 @@ function handleAdminScan(decodedText) {
   resultDiv.innerHTML = '<div class="loading-admin">Validating ticket...</div>';
 
   // Validate ticket
-  fetch(BASE_URL + "/check-booking", {
+  fetch(TLDS_CONFIG.ENDPOINTS.checkBooking, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ bookingId: data.bookingId })
@@ -1331,7 +1331,7 @@ function displayAdminTicket(qrData, bookingData) {
 function allowAdminEntry(bookingId) {
   const token = localStorage.getItem("adminToken");
   
-  fetch(BASE_URL + "/mark-booking-used", {
+  fetch(TLDS_CONFIG.ENDPOINTS.markBookingUsed, {
     method: "POST",
     headers: { 
       "Content-Type": "application/json",
@@ -1380,7 +1380,7 @@ function allowAdminEntry(bookingId) {
 function markAdminUnused(bookingId) {
   const token = localStorage.getItem("adminToken");
   
-  fetch(BASE_URL + "/mark-booking-unused", {
+  fetch(TLDS_CONFIG.ENDPOINTS.markBookingUnused, {
     method: "POST",
     headers: { 
       "Content-Type": "application/json",

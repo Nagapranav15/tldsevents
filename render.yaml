@@ -1,7 +1,7 @@
 services:
   # Web Service
   - type: web
-    name: tlds-events
+    name: tlds-events-backend
     env: node
     plan: free
     buildCommand: "npm install"
@@ -11,6 +11,8 @@ services:
         value: production
       - key: PORT
         value: 10000
+      - key: FRONTEND_URL
+        value: https://events.thinklabdigitalsolutions.com
       - key: MONGO_URI
         sync: false
       - key: RAZORPAY_KEY_ID
@@ -27,8 +29,13 @@ services:
         sync: false
       - key: EMAIL_PASS
         sync: false
+      - key: COOKIE_SECURE
+        value: true
     healthCheckPath: /
     autoDeploy: true
+    # Custom domain configuration (optional - set in Render dashboard)
+    # domains:
+    #   - api.thinklabdigitalsolutions.com
     
   # MongoDB (using Render's managed MongoDB)
   - type: pserv

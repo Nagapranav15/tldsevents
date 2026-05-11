@@ -21,14 +21,47 @@ const app = express();
 
 app.use(express.json());
 
+// Production CORS configuration
+const allowedOrigins = [
+  // New production domain
+  "https://events.thinklabdigitalsolutions.com",
+  // Old domain (temporary during migration)
+  "https://tldsevents.vercel.app",
+  // Render deployment URL (dynamic)
+  process.env.RENDER_EXTERNAL_URL,
+  // Local development
+  "http://localhost:5000",
+  "http://localhost:5500",
+  "http://localhost:3000",
+  "http://127.0.0.1:5000",
+  "http://127.0.0.1:5500"
+].filter(Boolean);
+
 app.use(cors({
-  origin: [
-    "http://localhost:5000",
-    "http://localhost:5500",
-    "https://tldsevents.vercel.app",
-    process.env.RENDER_EXTERNAL_URL
-  ].filter(Boolean)
+  origin: function(origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log(`CORS blocked origin: ${origin}`);
+      callback(null, false);
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
+
+// Security headers middleware
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
 
 app.use(express.static("public"));
 app.use("/tickets", express.static("uploads"));

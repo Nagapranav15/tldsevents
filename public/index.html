@@ -663,7 +663,10 @@ button:disabled{
 <script>
 async function loadEvents(){
   try{
-    const response = await fetch('https://tldsevents-backend.onrender.com/events');
+    const response = await fetch(TLDS_CONFIG.ENDPOINTS.events);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const events = await response.json();
     
     const container = document.getElementById('eventsContainer');
@@ -694,7 +697,10 @@ async function loadEvents(){
 
 async function loadPastEvents(){
   try{
-    const response = await fetch('https://tldsevents-backend.onrender.com/past-events');
+    const response = await fetch(TLDS_CONFIG.ENDPOINTS.pastEvents);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const events = await response.json();
     
     const container = document.getElementById('pastEventsContainer');
@@ -727,6 +733,7 @@ loadEvents();
 loadPastEvents();
 </script>
 
+<script src="config.js"></script>
 <script src="navbar.js"></script>
 <script src="footer.js"></script>
 <script src="animations.js"></script>

@@ -1,4 +1,5 @@
-const BASE_URL = "https://tldsevents-backend.onrender.com"; // Production backend URL
+// Using centralized config from config.js
+// BASE_URL is automatically set based on environment
 
 window.pay = async function(){
 
@@ -48,7 +49,7 @@ window.pay = async function(){
 
     /* GET KEY */
 
-    const configRes = await fetch(BASE_URL + "/config");
+    const configRes = await fetch(TLDS_CONFIG.ENDPOINTS.config);
 
     if(!configRes.ok){
       throw new Error("Server not responding");
@@ -58,7 +59,7 @@ window.pay = async function(){
 
     /* CREATE ORDER */
 
-    const orderRes = await fetch(BASE_URL + "/create-order",{
+    const orderRes = await fetch(TLDS_CONFIG.ENDPOINTS.createOrder,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({amount})
@@ -82,7 +83,7 @@ window.pay = async function(){
 
         try{
 
-          const verifyRes = await fetch(BASE_URL + "/verify-payment",{
+          const verifyRes = await fetch(TLDS_CONFIG.ENDPOINTS.verifyPayment,{
             method:"POST",
             headers:{"Content-Type":"application/json"},
             body: JSON.stringify({
@@ -161,7 +162,7 @@ window.pay = async function(){
 async function loadAvailability(){
 
   try{
-    const res = await fetch(BASE_URL + "/availability");
+    const res = await fetch(TLDS_CONFIG.ENDPOINTS.availability);
     const data = await res.json();
 
     document.getElementById("availability").innerText =

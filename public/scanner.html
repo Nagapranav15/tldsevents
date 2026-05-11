@@ -390,8 +390,8 @@
     </div>
 
     <script>
-        // Base URL configuration
-        const BASE_URL = "https://tldsevents-backend.onrender.com"; // Production backend URL
+        // Using centralized config from config.js
+        // BASE_URL is automatically set based on environment
         
         let scanning = true;
         const result = document.getElementById("result");
@@ -454,7 +454,7 @@
             result.innerHTML = '<div class="loading">Validating ticket...</div>';
 
             // Validate ticket
-            fetch(BASE_URL + "/check-booking", {
+            fetch(TLDS_CONFIG.ENDPOINTS.checkBooking, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ bookingId: data.bookingId })
@@ -536,7 +536,7 @@
         }
 
         function allowEntry(bookingId) {
-            fetch(BASE_URL + "/mark-booking-used", {
+            fetch(TLDS_CONFIG.ENDPOINTS.markBookingUsed, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ bookingId: bookingId })
@@ -589,6 +589,7 @@
         }
     </script>
 
+    <script src="config.js"></script>
     <script src="navbar.js"></script>
     <script src="footer.js"></script>
     <script src="animations.js"></script>

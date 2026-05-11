@@ -361,12 +361,11 @@ Show this QR at entry
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script src="config.js"></script>
 
 <script>
 
-/* CONFIG */
-
-const BASE_URL = "https://tldsevents-backend.onrender.com"; // Production backend URL
+/* CONFIG - Now using centralized config.js */
 
 /* GET DATA */
 
@@ -400,7 +399,7 @@ document.getElementById("qrImage").src =
 
 document.getElementById("downloadBtn").onclick = function(){
   if(bookingID){
-    window.open(`${BASE_URL}/download-ticket/${bookingID}`, "_blank");
+    window.open(TLDS_CONFIG.ENDPOINTS.downloadTicket(bookingID), "_blank");
   }else{
     alert("Download not available");
   }
