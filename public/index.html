@@ -419,8 +419,6 @@ section{
     transition: transform 0.1s ease;
   }
 }
-  background-clip:text;
-}
 
 #events::before{
   content:'';
@@ -738,15 +736,24 @@ async function loadPastEvents(){
     document.getElementById('pastEventsContainer').innerHTML = '<div class="no-events">Failed to load past events. Please try again later.</div>';
   }
 }
-
-loadEvents();
-loadPastEvents();
 </script>
 
 <script src="config.js"></script>
 <script src="navbar.js"></script>
 <script src="footer.js"></script>
 <script src="animations.js"></script>
+
+<script>
+  // Load events after config.js is loaded
+  if (typeof TLDS_CONFIG !== 'undefined') {
+    loadEvents();
+    loadPastEvents();
+  } else {
+    console.error('TLDS_CONFIG not loaded!');
+    document.getElementById('eventsContainer').innerHTML = 
+      '<div class="no-events">Error: Configuration not loaded. Please refresh.</div>';
+  }
+</script>
 
 </body>
 </html>
