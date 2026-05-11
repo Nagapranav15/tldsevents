@@ -691,7 +691,17 @@ async function loadEvents(){
     
   }catch(err){
     console.error('Error loading events:', err);
-    document.getElementById('eventsContainer').innerHTML = '<div class="no-events">Failed to load events. Please try again later.</div>';
+    const isCorsError = err.message.includes('CORS') || err.message.includes('Failed to fetch');
+    const errorMsg = isCorsError 
+      ? 'Connection error. Please check that the backend is deployed and CORS is configured.' 
+      : 'Failed to load events. Please try again later.';
+    document.getElementById('eventsContainer').innerHTML = `
+      <div class="no-events">
+        ${errorMsg}<br>
+        <small style="color:#666">${err.message}</small><br>
+        <small style="color:#666">API: ${TLDS_CONFIG.BASE_URL}</small>
+      </div>
+    `;
   }
 }
 
