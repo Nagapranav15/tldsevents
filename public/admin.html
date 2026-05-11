@@ -688,6 +688,9 @@ const stats = data.stats || {};
 const bookings = data.bookings || [];
 const events = data.events || [];
 
+// Store events for search functionality
+setEventsForSearch(events);
+
 let html = `
 <div class="tabs">
   <button class="tab-btn active" onclick="switchTab('bookings')">Bookings</button>
@@ -697,11 +700,11 @@ let html = `
 
 <div id="bookingsTab" class="tab-content active">
 <div style="margin-bottom:20px;">
-  <label>Filter by Event: </label>
-  <select id="eventFilter" onchange="changeEventFilter()">
-    <option value="">All Events</option>
-    ${events.map(e => `<option value="${e._id}" ${selectedEventId === e._id ? 'selected' : ''}>${e.title}</option>`).join('')}
-  </select>
+  <label>Search Event: </label>
+  <input type="text" id="eventSearchInput" placeholder="Type event name to search..." 
+         style="padding:8px 12px; border-radius:6px; border:1px solid #333; background:#111; color:#fff; width:250px;" 
+         oninput="searchEventByName(this.value)">
+  <div id="eventSearchResults" style="position:absolute; background:var(--card); border:1px solid #333; border-radius:6px; max-height:200px; overflow-y:auto; display:none; z-index:100; min-width:250px;"></div>
 </div>
 
 <div class="stats-container">
@@ -874,7 +877,61 @@ panel.innerHTML = "Error loading data";
 }
 
 function changeEventFilter(){
-  selectedEventId = document.getElementById("eventFilter").value;
+  selectedEventId = document.getElementById("eventFilter")?.value || "";
+  loadDashboard();
+}
+
+// Store all events for search
+let allEventsForSearch = [];
+
+function setEventsForSearch(events) {
+  allEventsForSearch = events;
+}
+
+function searchEventByName(searchTerm) {
+  const resultsDiv = document.getElementById("eventSearchResults");
+  
+  if (!searchTerm || searchTerm.trim() === "") {
+    resultsDiv.style.display = "none";
+    selectedEventId = "";
+    loadDashboard();
+    return;
+  }
+  
+  const matches = allEventsForSearch.filter(e => 
+    e.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  if (matches.length === 0) {
+    resultsDiv.innerHTML = `<div style="padding:10px; color:#888;">No events found</div>`;
+    resultsDiv.style.display = "block";
+    return;
+  }
+  
+  resultsDiv.innerHTML = matches.map(e => `
+    <div onclick="selectEventByName('${e._id}', '${e.title.replace(/'/g, "\\'")}')" 
+         style="padding:10px; cursor:pointer; hover:bg:rgba(255,255,255,0.1); border-bottom:1px solid #333;">
+      ${e.title}
+    </div>
+  `).join('') + 
+  `<div onclick="clearEventFilter()" style="padding:10px; cursor:pointer; color:#ff6b6b; text-align:center;">
+    ✕ Clear Filter
+  </div>`;
+  
+  resultsDiv.style.display = "block";
+}
+
+function selectEventByName(eventId, eventTitle) {
+  selectedEventId = eventId;
+  document.getElementById("eventSearchInput").value = eventTitle;
+  document.getElementById("eventSearchResults").style.display = "none";
+  loadDashboard();
+}
+
+function clearEventFilter() {
+  selectedEventId = "";
+  document.getElementById("eventSearchInput").value = "";
+  document.getElementById("eventSearchResults").style.display = "none";
   loadDashboard();
 }
 
