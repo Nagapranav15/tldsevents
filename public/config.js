@@ -134,4 +134,113 @@
             ENV: config.ENV
         });
     }
+
+    // Test API connection and show debug info
+    config.testConnection = async function() {
+        const results = {
+            timestamp: new Date().toISOString(),
+            hostname: hostname,
+            baseUrl: BASE_URL,
+            tests: {}
+        };
+
+        try {
+            console.log('🔍 Testing API connection...');
+            const response = await fetch(BASE_URL + '/events', { 
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'omit'
+            });
+            results.tests.events = {
+                success: response.ok,
+                status: response.status,
+                statusText: response.statusText
+            };
+            console.log('✅ Events API:', response.status, response.ok ? 'OK' : 'Failed');
+        } catch (err) {
+            results.tests.events = {
+                success: false,
+                error: err.message,
+                isCors: err.message.includes('CORS') || err.message.includes('Failed to fetch')
+            };
+            console.error('❌ Events API Error:', err.message);
+        }
+
+        try {
+            const response = await fetch(BASE_URL + '/config', { 
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'omit'
+            });
+            results.tests.config = {
+                success: response.ok,
+                status: response.status
+            };
+            console.log('✅ Config API:', response.status, response.ok ? 'OK' : 'Failed');
+        } catch (err) {
+            results.tests.config = {
+                success: false,
+                error: err.message
+            };
+            console.error('❌ Config API Error:', err.message);
+        }
+
+        // Show visual debug panel
+        const debugPanel = document.createElement('div');
+        debugPanel.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.9);
+            color: #0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            max-width: 400px;
+            z-index: 9999;
+            border: 2px solid #0f0;
+        `;
+        
+        const allSuccess = Object.values(results.tests).every(t => t.success);
+        debugPanel.innerHTML = `
+            <div style="color:${allSuccess ? '#0f0' : '#f00'}; font-weight:bold; margin-bottom:10px;">
+                ${allSuccess ? '✅ API CONNECTION OK' : '❌ API CONNECTION FAILED'}
+            </div>
+            <div>Hostname: ${results.hostname}</div>
+            <div>API URL: ${results.baseUrl}</div>
+            <div style="margin-top:10px;">
+                ${Object.entries(results.tests).map(([name, result]) => `
+                    <div style="color:${result.success ? '#0f0' : '#f00'}">
+                        ${result.success ? '✅' : '❌'} ${name}: ${result.status || result.error}
+                    </div>
+                `).join('')}
+            </div>
+            <div style="margin-top:10px; color:#888; font-size:10px;">
+                Click to close | Press Ctrl+Shift+D to test again
+            </div>
+        `;
+        
+        debugPanel.onclick = () => debugPanel.remove();
+        document.body.appendChild(debugPanel);
+
+        return results;
+    };
+
+    // Auto-run test on load if URL has ?debug
+    if (window.location.search.includes('debug')) {
+        window.addEventListener('load', () => {
+            setTimeout(() => config.testConnection(), 1000);
+        });
+    }
+
+    // Keyboard shortcut: Ctrl+Shift+D to test
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+            e.preventDefault();
+            config.testConnection();
+        }
+    });
+
+    console.log('TLDS Events Config loaded. Press Ctrl+Shift+D to test API connection.');
 })();
