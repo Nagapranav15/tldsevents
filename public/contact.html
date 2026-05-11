@@ -317,8 +317,9 @@ footer{
   </div>
 </section>
 
+<script src="config.js"></script>
 <script>
-document.getElementById('contactForm').addEventListener('submit', function(e) {
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   
   const name = document.getElementById('name').value;
@@ -327,6 +328,7 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
   const message = document.getElementById('message').value;
   
   const status = document.getElementById('status');
+  const submitBtn = document.querySelector('#contactForm button[type="submit"]');
   
   // Validate form
   if (!name || !email || !subject || !message) {
@@ -335,24 +337,37 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
     return;
   }
   
-  // Create email content
-  const emailSubject = encodeURIComponent(`Contact Form: ${subject}`);
-  const emailBody = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nSubject: ${subject}\n\nMessage:\n${message}`);
+  // Disable button during submission
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Sending...';
+  status.style.color = '#888';
+  status.textContent = 'Sending your message...';
   
-  // Open email client
-  const mailtoLink = `mailto:info@thinklabdigitalsolutions.com?subject=${emailSubject}&body=${emailBody}`;
-  
-  status.style.color = '#4ade80';
-  status.textContent = 'Opening your email client...';
-  
-  // Try to open email client
-  window.location.href = mailtoLink;
-  
-  // Show success message after a short delay
-  setTimeout(() => {
-    status.textContent = 'Email client opened! Please send the email to complete your inquiry.';
-    document.getElementById('contactForm').reset();
-  }, 1000);
+  try {
+    const response = await fetch(TLDS_CONFIG.ENDPOINTS.contact, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, subject, message })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      status.style.color = '#4ade80';
+      status.textContent = '✅ Message sent successfully! We will get back to you soon.';
+      document.getElementById('contactForm').reset();
+    } else {
+      status.style.color = '#ff6b6b';
+      status.textContent = '❌ Failed to send message. Please try again.';
+    }
+  } catch (error) {
+    status.style.color = '#ff6b6b';
+    status.textContent = '❌ Error sending message. Please try again later.';
+    console.error('Contact form error:', error);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send Message';
+  }
 });
 </script>
 

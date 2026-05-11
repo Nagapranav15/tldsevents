@@ -669,7 +669,8 @@ app.post("/contact", async (req,res)=>{
 
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER,
+      to: "info@thinklabdigitalsolutions.com",
+      replyTo: email,
       subject: `Contact Form: ${subject}`,
       text: `
 Name: ${name}
