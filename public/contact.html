@@ -98,33 +98,60 @@ section{
   margin:auto;
 }
 
-h1{
-  font-size:36px;
-  margin-bottom:10px;
-  color:var(--accent);
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 10px 20px;
+  background: var(--card);
+  color: var(--text);
+  text-decoration: none;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+  font-size: 14px;
 }
 
-.subtitle{
-  color:var(--muted);
-  margin-bottom:40px;
+.back-link:hover {
+  color: var(--accent);
+  background: rgba(162,128,255,0.1);
+  border-color: rgba(162,128,255,0.3);
+  transform: translateY(-2px);
+}
+
+h1{
+  font-size:48px;
+  margin-bottom:15px;
+  background:var(--gradient);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  font-weight:700;
 }
 
 h2{
-  font-size:24px;
-  margin:30px 0 15px 0;
   color:var(--accent);
+  margin:30px 0 15px;
+  font-size:24px;
+}
+
+h3{
+  color:var(--text);
+  margin:20px 0 10px;
+  font-size:18px;
 }
 
 p{
   line-height:1.8;
   color:#ddd;
   margin-bottom:15px;
+  font-size:15px;
 }
 
-pli{
-  line-height:1.8;
-  color:#ddd;
-  margin-bottom:8px;
+.subtitle{
+  color:var(--muted);
+  margin-bottom:30px;
+  font-size:14px;
 }
 
 /* GRID */
@@ -274,6 +301,7 @@ footer{
 <div class="scroll-progress"></div>
 
 <section class="reveal animate-fadeInUp">
+  <a href="index.html" class="back-link">← Back to Events</a>
   <h1>Contact Us</h1>
   <p class="subtitle">We'd love to hear from you</p>
   <p class="subtitle">Thinklab Digital Solutions LLP</p>
@@ -299,7 +327,11 @@ footer{
         <h3>Address</h3>
         <p>Thinklab Digital Solutions LLP</p>
         <p>Vijayawada, Andhra Pradesh, India</p>
-        <p>Email: info@thinklabdigitalsolutions.com</p>
+      </div>
+
+      <div class="contact-item">
+        <h3>Website</h3>
+        <p><a href="https://www.thinklabdigitalsolutions.com" target="_blank" rel="noopener noreferrer">www.thinklabdigitalsolutions.com</a></p>
       </div>
     </div>
 

@@ -94,42 +94,103 @@ body{
 
 section{
   padding:70px 20px;
-  max-width:1100px;
+  max-width:1000px;
   margin:auto;
 }
 
-h1{
-  font-size:36px;
-  margin-bottom:10px;
-  color:var(--accent);
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 10px 20px;
+  background: var(--card);
+  color: var(--text);
+  text-decoration: none;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+  font-size: 14px;
 }
 
-.subtitle{
-  color:var(--muted);
-  margin-bottom:40px;
+.back-link:hover {
+  color: var(--accent);
+  background: rgba(162,128,255,0.1);
+  border-color: rgba(162,128,255,0.3);
+  transform: translateY(-2px);
+}
+
+h1{
+  font-size:48px;
+  margin-bottom:15px;
+  background:var(--gradient);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  font-weight:700;
 }
 
 h2{
-  font-size:24px;
-  margin:30px 0 15px 0;
   color:var(--accent);
+  margin:0 0 15px;
+  font-size:24px;
+}
+
+h3{
+  color:var(--text);
+  margin:20px 0 10px;
+  font-size:18px;
 }
 
 p{
   line-height:1.8;
   color:#ddd;
   margin-bottom:15px;
+  font-size:15px;
 }
 
-ul{
-  margin-left:20px;
-  margin-bottom:15px;
+.subtitle{
+  color:var(--muted);
+  margin-bottom:30px;
+  font-size:14px;
+}
+
+.card {
+  background: var(--card);
+  padding: 30px;
+  border-radius: 16px;
+  margin-bottom: 25px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.card h2 {
+  margin-bottom: 15px;
+}
+
+.alert-card {
+  background: rgba(255,107,107,0.1);
+  border: 1px solid rgba(255,107,107,0.3);
+}
+
+ul, ol{
+  margin:15px 0;
+  padding-left:25px;
 }
 
 li{
-  line-height:1.8;
+  margin:8px 0;
+  line-height:1.6;
   color:#ddd;
-  margin-bottom:8px;
+  font-size:15px;
+}
+
+a{
+  color:var(--accent);
+  text-decoration:none;
+  transition:0.3s;
+}
+
+a:hover{
+  text-decoration:underline;
 }
 
 /* MOBILE RESPONSIVE STYLES */
@@ -315,66 +376,70 @@ footer{
 <div class="scroll-progress"></div>
 
 <section class="reveal animate-fadeInUp">
+  <a href="index.html" class="back-link">← Back to Events</a>
   <h1>No Refund Policy</h1>
   <p class="subtitle">Last Updated: May 2026</p>
   <p class="subtitle">Thinklab Digital Solutions LLP</p>
 
-  <div class="alert" style="background:rgba(255,0,0,0.1); border:1px solid rgba(255,0,0,0.3); padding:20px; border-radius:8px; margin:20px 0;">
-    <p style="color:#ff6b6b; font-weight:600; font-size:18px;">⚠️ ALL TICKET SALES ARE FINAL</p>
+  <div class="card alert-card">
+    <p style="color:#ff6b6b; font-weight:600; font-size:18px; margin:0;">⚠️ ALL TICKET SALES ARE FINAL</p>
   </div>
 
-  <h2>1. No Refunds Policy</h2>
-  <p>TLDS Events operates under a strict <strong>NO REFUND</strong> policy. Once a ticket is purchased:</p>
-  <ul>
-    <li>No refunds will be issued for any reason</li>
-    <li>No cancellations are permitted</li>
-    <li>No exchanges or transfers are allowed</li>
-    <li>No credits will be provided for future events</li>
-  </ul>
+  <div class="card">
+    <h2>1. No Refunds Policy</h2>
+    <p>TLDS Events operates under a strict <strong>NO REFUND</strong> policy. Once a ticket is purchased:</p>
+    <ul>
+      <li>No refunds will be issued for any reason</li>
+      <li>No cancellations are permitted</li>
+      <li>No exchanges or transfers are allowed</li>
+      <li>No credits will be provided for future events</li>
+    </ul>
+  </div>
 
-  <h2>2. No-Show Policy</h2>
-  <p>If you fail to attend an event (no-show):</p>
-  <ul>
-    <li>Your ticket becomes void</li>
-    <li>No refund or credit will be provided</li>
-    <li>Ticket cannot be used for future events</li>
-  </ul>
+  <div class="card">
+    <h2>2. No-Show Policy</h2>
+    <p>If you fail to attend an event (no-show):</p>
+    <ul>
+      <li>Your ticket becomes void</li>
+      <li>No refund or credit will be provided</li>
+      <li>Ticket cannot be used for future events</li>
+    </ul>
+  </div>
 
-  <h2>3. Event Cancellation by Organizer</h2>
-  <p>In the unlikely event that we must cancel an event:</p>
-  <ul>
-    <li>Tickets may be transferred to a rescheduled date</li>
-    <li>Credit for future events may be issued at our discretion</li>
-    <li>Refund decisions are at sole discretion of management</li>
-  </ul>
+  <div class="card">
+    <h2>3. Event Cancellation by Organizer</h2>
+    <p>In the unlikely event that we must cancel an event:</p>
+    <ul>
+      <li>Tickets may be transferred to a rescheduled date</li>
+      <li>Credit for future events may be issued at our discretion</li>
+      <li>Refund decisions are at sole discretion of management</li>
+    </ul>
+  </div>
 
-  <h2>4. Force Majeure</h2>
-  <p>We are not responsible for events affected by circumstances beyond our control, including but not limited to:</p>
-  <ul>
-    <li>Natural disasters, pandemics, or emergencies</li>
-    <li>Government restrictions or lockdowns</li>
-    <li>Artist/performer cancellations</li>
-    <li>Venue unavailability</li>
-  </ul>
-  <p>In such cases, we will make reasonable efforts to reschedule, but <strong>no refunds will be issued</strong>.</p>
+  <div class="card">
+    <h2>4. Force Majeure</h2>
+    <p>TLDS Events is not responsible for refunds or compensation due to circumstances beyond our control, including but not limited to:</p>
+    <ul>
+      <li>Natural disasters</li>
+      <li>Acts of terrorism</li>
+      <li>Government restrictions</li>
+      <li>Public health emergencies</li>
+      <li>Transportation strikes</li>
+    </ul>
+  </div>
 
-  <h2>5. Ticket Transfers</h2>
-  <p>Tickets are <strong>non-transferable</strong> and cannot be sold or given to another person. The name on the ticket must match the attendee.</p>
+  <div class="card">
+    <h2>5. Payment Processing</h2>
+    <p>Payment processing fees charged by Razorpay or other payment providers are non-refundable under any circumstances.</p>
+  </div>
 
-  <h2>6. Purchase Verification</h2>
-  <p>Before completing your purchase:</p>
-  <ul>
-    <li>Verify the event date, time, and venue</li>
-    <li>Ensure you can attend before buying</li>
-    <li>Double-check your personal details</li>
-    <li>Understand that all sales are final</li>
-  </ul>
-
-  <h2>7. Contact Us</h2>
-  <p>For any questions about this policy:</p>
-  <p>Email: info@thinklabdigitalsolutions.com</p>
-  <p><strong>Company:</strong> Thinklab Digital Solutions LLP</p>
-  <p style="margin-top:20px; color:#888; font-size:13px;">By purchasing a ticket, you acknowledge and agree to this No Refund Policy.</p>
+  <div class="card">
+    <h2>Contact Us</h2>
+    <p>If you have questions about this policy, please contact us at:</p>
+    <p><strong>Email:</strong> info@thinklabdigitalsolutions.com</p>
+    <p><strong>Website:</strong> <a href="https://www.thinklabdigitalsolutions.com" target="_blank" rel="noopener noreferrer">www.thinklabdigitalsolutions.com</a></p>
+    <p><strong>Address:</strong> Vijayawada, Andhra Pradesh, India</p>
+  </div>
 </section>
 
 <script src="content-protection.js"></script>
