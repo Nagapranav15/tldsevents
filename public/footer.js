@@ -4,31 +4,36 @@ document.addEventListener('DOMContentLoaded', function() {
   <div class="footer-content">
     <div class="footer-section">
       <h4>About TLDS Events</h4>
-      <p>TLDS Events is an event booking platform brought to you by Thinklab Digital Solutions LLP. We provide seamless ticket booking experiences for concerts, conferences, and various events across India. Contact us at info@thinklabdigitalsolutions.com</p>
+      <p>TLDS Events is a premier PR event registration platform powered by Thinklab Digital Solutions LLP. We specialize in PR events, attendee registrations, audience engagement, and digital event experiences across India.</p>
+      <div class="powered-by">
+        <span class="powered-badge">Powered by</span>
+        <span class="powered-brand">ThinkLab Digital Solutions</span>
+      </div>
     </div>
     <div class="footer-section">
       <h4>Quick Links</h4>
       <a href="index.html">Home</a>
+      <a href="about.html">About Us</a>
       <a href="https://www.thinklabdigitalsolutions.com" target="_blank" rel="noopener noreferrer">Our Website</a>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="refund.html">Refund Policy</a>
-      <a href="terms.html">Terms of Service</a>
       <a href="contact.html">Contact Us</a>
     </div>
     <div class="footer-section">
-      <h4>Contact</h4>
-      <p>Email: info@thinklabdigitalsolutions.com</p>
-      
+      <h4>Policies</h4>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms & Conditions</a>
+      <a href="refund.html">Refund Policy</a>
+      <a href="shipping.html">Shipping & Delivery Policy</a>
     </div>
     <div class="footer-section">
-      <h4>Company</h4>
-      <p>Thinklab Digital Solutions LLP</p>
-      <a href="https://www.thinklabdigitalsolutions.com" target="_blank" rel="noopener noreferrer">Visit Our Website</a>
+      <h4>Contact Us</h4>
+      <p><strong>Email:</strong> info@thinklabdigitalsolutions.com</p>
+      <p><strong>Phone:</strong> +91 XXXXX XXXXX</p>
+      <p><strong>Address:</strong> Vijayawada, Andhra Pradesh, India</p>
     </div>
   </div>
   <div class="footer-bottom">
     <p>&copy; 2026 Thinklab Digital Solutions LLP. All rights reserved.</p>
-    
+    <p class="footer-legal">PR Events & Digital Event Experiences Platform</p>
   </div>
 </footer>
 <style>
@@ -148,6 +153,35 @@ document.addEventListener('DOMContentLoaded', function() {
   .footer-section:nth-child(2) { animation-delay: 0.1s; }
   .footer-section:nth-child(3) { animation-delay: 0.15s; }
   .footer-section:nth-child(4) { animation-delay: 0.2s; }
+}
+
+/* Powered by badge styling */
+.powered-by {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(162, 128, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.powered-badge {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.powered-brand {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.footer-legal {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 5px;
 }
 </style>
 `;
