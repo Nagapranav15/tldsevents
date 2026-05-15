@@ -649,21 +649,9 @@
    CURSOR EFFECTS (FIXED)
    ============================================ */
 
-.cursor-trail {
-  cursor: none;
-  transition: all 0.2s ease-out;
-  pointer-events: none;
-}
-
-.cursor-dot {
-  cursor: none;
-  transition: all 0.1s ease-out;
-  pointer-events: none;
-}
-
-/* Disable default cursor on body for custom cursor */
+/* Default cursor enabled for better UX */
 body {
-  cursor: none;
+  cursor: auto;
 }
 
 /* Show default cursor on text inputs and text areas */
@@ -672,7 +660,7 @@ input[type="email"],
 input[type="password"],
 textarea,
 select {
-  cursor: text !important;
+  cursor: text;
 }
 
 /* Show pointer cursor on interactive elements */
@@ -683,12 +671,7 @@ button,
 .event-card,
 .hover-lift,
 .hover-scale {
-  cursor: pointer !important;
-}
-
-/* Smooth cursor transitions */
-* {
-  transition: cursor 0.1s ease;
+  cursor: pointer;
 }
 
 .cursor-glow {
@@ -698,30 +681,6 @@ button,
 
 .cursor-glow:hover {
   filter: drop-shadow(0 0 10px var(--accent));
-}
-
-/* Ensure cursor works on all elements */
-* {
-  cursor: inherit !important;
-}
-
-/* Override for specific elements */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-textarea,
-select {
-  cursor: text !important;
-}
-
-a,
-button,
-[onclick],
-.btn,
-.event-card,
-.hover-lift,
-.hover-scale {
-  cursor: pointer !important;
 }
 
 /* ============================================
