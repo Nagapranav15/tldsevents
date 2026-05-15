@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
       <a href="privacy.html">Privacy Policy</a>
       <a href="terms.html">Terms & Conditions</a>
       <a href="refund.html">Refund Policy</a>
-      <a href="shipping.html">Shipping & Delivery Policy</a>
     </div>
     <div class="footer-section">
       <h4>Contact Us</h4>
