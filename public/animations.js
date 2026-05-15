@@ -496,5 +496,5 @@ function initCursorTrail() {
   }, 100);
 }
 
-// Initialize enhanced cursor trail
-initCursorTrail();
+// Cursor trail disabled for better UX and performance
+// initCursorTrail();
