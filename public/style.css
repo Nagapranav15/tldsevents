@@ -26,6 +26,19 @@ body {
   color: var(--text);
   overflow-x: hidden;
   line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Smooth page transitions */
+body {
+  opacity: 0;
+  animation: pageLoad 0.5s ease forwards;
+}
+
+@keyframes pageLoad {
+  to {
+    opacity: 1;
+  }
 }
 
 /* Scroll Progress Bar */
@@ -55,17 +68,23 @@ section {
   margin-bottom: 25px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 30px rgba(162, 128, 255, 0.2);
+  border-color: rgba(162, 128, 255, 0.3);
 }
 
 .card h2 {
   color: var(--accent);
   margin-bottom: 15px;
   font-size: 24px;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Typography */
@@ -117,16 +136,23 @@ button, .btn {
   transition: all 0.3s ease;
   display: inline-block;
   text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-primary {
   background: var(--gradient);
   color: white;
+  box-shadow: 0 4px 15px rgba(162, 128, 255, 0.3);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(162, 128, 255, 0.4);
+  box-shadow: 0 6px 20px rgba(162, 128, 255, 0.5);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
 }
 
 /* Form Elements */
@@ -139,12 +165,13 @@ input, select, textarea {
   background: #1a1a1a;
   color: white;
   font-size: 14px;
-  transition: border-color 0.3s;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(162, 128, 255, 0.2);
 }
 
 /* Footer Styles */
