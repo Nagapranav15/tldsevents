@@ -18,7 +18,11 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="nav-links" id="navLinks">
       <a href="index.html" class="${currentPage === 'index.html' ? 'active' : ''}">Home</a>
       <a href="index.html#events" class="${currentPage === 'index.html' ? 'active' : ''}">Events</a>
+      <a href="about.html" class="${currentPage === 'about.html' ? 'active' : ''}">About Us</a>
       <a href="https://www.thinklabdigitalsolutions.com" target="_blank" rel="noopener noreferrer">Our Website</a>
+      <a href="privacy.html" class="${currentPage === 'privacy.html' ? 'active' : ''}">Privacy Policy</a>
+      <a href="terms.html" class="${currentPage === 'terms.html' ? 'active' : ''}">Terms</a>
+      <a href="refund.html" class="${currentPage === 'refund.html' ? 'active' : ''}">Refund Policy</a>
       <a href="contact.html" class="${currentPage === 'contact.html' ? 'active' : ''}">Contact Us</a>
     </div>
     <div class="hamburger" id="hamburger">
@@ -167,6 +171,9 @@ document.addEventListener('DOMContentLoaded', function() {
   .nav-links a:nth-child(3) { animation-delay: 0.3s; }
   .nav-links a:nth-child(4) { animation-delay: 0.4s; }
   .nav-links a:nth-child(5) { animation-delay: 0.5s; }
+  .nav-links a:nth-child(6) { animation-delay: 0.6s; }
+  .nav-links a:nth-child(7) { animation-delay: 0.7s; }
+  .nav-links a:nth-child(8) { animation-delay: 0.8s; }
   
   @keyframes navFadeIn {
     to {
